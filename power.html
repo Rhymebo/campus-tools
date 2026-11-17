@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>电费计算器 · 校园生活工具站</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ===== 电费计算器专用样式 ===== */
+    .calc-wrap { max-width: 760px; margin: 0 auto; padding: 0 16px 60px; }
+
+    /* Tab 栏 */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      background: #eef1f6;
+      padding: 6px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 12px 8px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #5a6a85;
+      cursor: pointer;
+      transition: all .2s;
+      font-family: inherit;
+    }
+    .tab-btn.active {
+      background: #fff;
+      color: #1a3a6b;
+      box-shadow: 0 2px 8px rgba(20, 40, 80, .1);
+    }
+
+    /* 表单卡片 */
+    .form-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(20, 40, 80, .07);
+      margin-bottom: 20px;
+    }
+    .field { margin-bottom: 20px; }
+    .field:last-child { margin-bottom: 0; }
+    .field label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #2c3e5c;
+      margin-bottom: 8px;
+    }
+    .field input,
+    .field select {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px 14px;
+      border: 1.5px solid #dde3ec;
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: inherit;
+      color: #1a2634;
+      background: #fafbfd;
+      transition: border-color .2s;
+    }
+    .field input:focus,
+    .field select:focus {
+      outline: none;
+      border-color: #3b7ddd;
+      background: #fff;
+    }
+    .hint {
+      font-size: 12.5px;
+      color: #8a97ab;
+      margin-top: 6px;
+    }
+    .unit-row { display: flex; gap: 10px; }
+    .unit-row > * { flex: 1; }
+
+    /* 计算按钮 */
+    .calc-btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #3b7ddd, #2b5fc4);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform .15s, box-shadow .15s;
+      box-shadow: 0 4px 14px rgba(59, 125, 221, .3);
+    }
+    .calc-btn:active {
+      transform: scale(.98);
+      box-shadow: 0 2px 8px rgba(59, 125, 221, .3);
+    }
+
+    /* 结果卡片 */
+    .result-card {
+      display: none;
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(20, 40, 80, .07);
+      margin-bottom: 20px;
+      border-left: 4px solid #3b7ddd;
+    }
+    .result-card.show { display: block; animation: fadeIn .3s; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #2c3e5c;
+      margin: 0 0 18px;
+    }
+    .result-main {
+      text-align: center;
+      padding: 16px 0 20px;
+      border-bottom: 1px dashed #e4e9f1;
+      margin-bottom: 18px;
+    }
+    .result-main .label { font-size: 13px; color: #8a97ab; margin-bottom: 6px; }
+    .result-main .big {
+      font-size: 38px;
+      font-weight: 800;
+      color: #3b7ddd;
+      line-height: 1.1;
+    }
+    .result-main .big span { font-size: 17px; font-weight: 600; margin-left: 4px; }
+
+    .detail-list { list-style: none; padding: 0; margin: 0; }
+    .detail-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      font-size: 14.5px;
+      color: #4a5b73;
+      border-bottom: 1px solid #f2f5f9;
+    }
+    .detail-list li:last-child { border-bottom: none; }
+    .detail-list li b { color: #1a2634; font-weight: 700; }
+
+    /* 安全提示 */
+    .safety-alert {
+      display: none;
+      margin-top: 18px;
+      padding: 14px 16px;
+      background: #fff4f0;
+      border: 1.5px solid #ffd0bd;
+      border-radius: 10px;
+      font-size: 14px;
+      color: #c6440f;
+      line-height: 1.6;
+    }
+    .safety-alert.show { display: block; }
+    .safety-alert b { display: block; margin-bottom: 4px; }
+
+    /* 底部说明 */
+    .footnote {
+      background: #f7f9fc;
+      border-radius: 14px;
+      padding: 20px 22px;
+      font-size: 13.5px;
+      color: #6b7a92;
+      line-height: 1.8;
+    }
+    .footnote h4 {
+      font-size: 13.5px;
+      color: #2c3e5c;
+      margin: 0 0 8px;
+      font-weight: 700;
+    }
+    .footnote h4:not(:first-child) { margin-top: 16px; }
+    .footnote code {
+      background: #e8eef8;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 12.5px;
+      color: #2b5fc4;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">← 返回首页</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="calc-wrap">
+
+      <h1>电费计算器</h1>
+      <p class="lede">选电器或输入功率，填上使用时长和电价，立即算出单次、每周、每月的预估电费。</p>
+
+      <!-- ===== Tab 栏 ===== -->
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="quick">快速选择电器</button>
+        <button class="tab-btn" data-tab="custom">自定义功率计算</button>
+      </div>
+
+      <!-- ===== 表单区域 ===== -->
+      <div class="form-card">
+
+        <!-- 快速选择：电器下拉 -->
+        <div class="field" id="field-quick">
+          <label for="appliance">选择电器</label>
+          <select id="appliance">
+            <option value="">-- 请选择 --</option>
+            <option value="1500">电热水壶（1500 W）</option>
+            <option value="1000">电吹风（1000 W）</option>
+            <option value="800">电饭煲（800 W）</option>
+            <option value="500">台式电脑（500 W）</option>
+            <option value="200">电风扇（200 W）</option>
+            <option value="100">手机充电器（100 W）</option>
+            <option value="50">宿舍台灯（50 W）</option>
+          </select>
+        </div>
+
+        <!-- 自定义：功率输入 -->
+        <div class="field" id="field-custom" style="display:none;">
+          <label for="power">电器功率</label>
+          <input type="number" id="power" placeholder="例如 800" min="1" step="1">
+          <p class="hint">单位：瓦特（W），请查看电器铭牌。1000 W = 1 kW。</p>
+        </div>
+
+        <!-- 单次使用时长 -->
+        <div class="field">
+          <label for="hours">单次使用时长</label>
+          <input type="number" id="hours" placeholder="例如 1.5" min="0.1" step="0.1" value="1">
+          <p class="hint">单位：小时（h）。30 分钟填 0.5。</p>
+        </div>
+
+        <!-- 每周使用天数 -->
+        <div class="field">
+          <label for="days">每周使用天数</label>
+          <input type="number" id="days" placeholder="例如 5" min="1" max="7" step="1" value="5">
+          <p class="hint">单位：天/周，1～7。</p>
+        </div>
+
+        <!-- 电价 -->
+        <div class="field">
+          <label for="price">电价</label>
+          <input type="number" id="price" placeholder="例如 0.6" min="0.01" step="0.01" value="0.6">
+          <p class="hint">单位：元/度（kWh）。一般居民电价约 0.5～0.6 元/度，以学校实际标准为准。</p>
+        </div>
+
+      </div>
+
+      <button class="calc-btn" id="calcBtn">开始计算</button>
+
+      <!-- ===== 结果卡片 ===== -->
+      <div class="result-card" id="resultCard">
+
+        <p class="result-title">📊 计算明细</p>
+
+        <div class="result-main">
+          <div class="label">每月预估电费</div>
+          <div class="big" id="monthCost">0.00<span>元</span></div>
+        </div>
+
+        <ul class="detail-list">
+          <li><span>电器功率</span><b id="dPower">— W</b></li>
+          <li><span>单次使用时长</span><b id="dHours">— h</b></li>
+          <li><span>单次耗电量</span><b id="dKwh">— 度</b></li>
+          <li><span>单次电费</span><b id="dOnce">— 元</b></li>
+          <li><span>每周使用</span><b id="dWeek">— 天</b></li>
+          <li><span>每周电费</span><b id="dWeekCost">— 元</b></li>
+          <li><span>电价标准</span><b id="dPrice">— 元/度</b></li>
+        </ul>
+
+        <!-- 安全提示：大功率时出现 -->
+        <div class="safety-alert" id="safetyAlert">
+          <b>⚠️ 安全提示</b>
+          该电器功率较大（<span id="alertPower">0</span> W），宿舍通常严禁使用违规大功率电器。使用时容易导致跳闸、线路过热，存在火灾隐患。请遵守学校宿舍管理规定。
+        </div>
+
+      </div>
+
+      <!-- ===== 底部说明区 ===== -->
+      <div class="footnote">
+        <h4>计算公式说明</h4>
+        <p>
+          单次耗电量（度）= 功率（W）÷ 1000 × 单次时长（h）<br>
+          单次电费（元）= 单次耗电量 × 电价（元/度）<br>
+          每周电费 = 单次电费 × 每周天数<br>
+          每月电费 = 每周电费 × 4（按每月 4 周估算）
+        </p>
+
+        <h4>备注</h4>
+        <p>
+          功率均为常见参考值，实际请以电器铭牌标注为准。结果仅为预估，实际电费受使用习惯、电压波动、线路损耗等因素影响，仅供参考。
+        </p>
+
+        <h4>安全提醒</h4>
+        <p>
+          宿舍严禁使用违规大功率电器。请勿私拉乱接电线，离开时切断电源，注意用电防火安全。
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="js/common.js"></script>
+  <script>
+    // ===== 元素引用 =====
+    var tabBtns     = document.querySelectorAll('.tab-btn');
+    var fieldQuick  = document.getElementById('field-quick');
+    var fieldCustom = document.getElementById('field-custom');
+    var appliance   = document.getElementById('appliance');
+    var powerInput  = document.getElementById('power');
+    var hoursInput  = document.getElementById('hours');
+    var daysInput   = document.getElementById('days');
+    var priceInput  = document.getElementById('price');
+    var calcBtn     = document.getElementById('calcBtn');
+    var resultCard  = document.getElementById('resultCard');
+    var safetyAlert = document.getElementById('safetyAlert');
+
+    var currentTab = 'quick';
+
+    // ===== Tab 切换 =====
+    tabBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        tabBtns.forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        currentTab = btn.getAttribute('data-tab');
+
+        if (currentTab === 'quick') {
+          fieldQuick.style.display  = 'block';
+          fieldCustom.style.display = 'none';
+        } else {
+          fieldQuick.style.display  = 'none';
+          fieldCustom.style.display = 'block';
+        }
+        resultCard.classList.remove('show');
+        safetyAlert.classList.remove('show');
+      });
+    });
+
+    // ===== 计算 =====
+    calcBtn.addEventListener('click', function () {
+      // 1. 取功率
+      var power;
+      if (currentTab === 'quick') {
+        if (!appliance.value) {
+          alert('请先选择一个电器');
+          return;
+        }
+        power = parseFloat(appliance.value);
+      } else {
+        power = parseFloat(powerInput.value);
+        if (!power || power <= 0) {
+          alert('请输入有效的功率（大于 0）');
+          return;
+        }
+      }
+
+      // 2. 取时长、天数、电价
+      var hours = parseFloat(hoursInput.value);
+      var days  = parseFloat(daysInput.value);
+      var price = parseFloat(priceInput.value);
+
+      if (!hours || hours <= 0) { alert('请输入有效的使用时长'); return; }
+      if (!days || days < 1 || days > 7) { alert('每周使用天数需在 1～7 之间'); return; }
+      if (!price || price <= 0) { alert('请输入有效的电价'); return; }
+
+      // 3. 计算
+      var kwhOnce   = power / 1000 * hours;     // 单次耗电量（度）
+      var costOnce  = kwhOnce * price;          // 单次电费
+      var costWeek  = costOnce * days;          // 每周电费
+      var costMonth = costWeek * 4;             // 每月电费（按 4 周）
+
+      // 4. 输出到页面
+      document.getElementById('monthCost').innerHTML  = costMonth.toFixed(2) + '<span>元</span>';
+      document.getElementById('dPower').textContent    = power + ' W';
+      document.getElementById('dHours').textContent    = hours + ' h';
+      document.getElementById('dKwh').textContent      = kwhOnce.toFixed(3) + ' 度';
+      document.getElementById('dOnce').textContent     = costOnce.toFixed(3) + ' 元';
+      document.getElementById('dWeek').textContent     = days + ' 天';
+      document.getElementById('dWeekCost').textContent = costWeek.toFixed(2) + ' 元';
+      document.getElementById('dPrice').textContent    = price + ' 元/度';
+
+      // 5. 安全提示：功率 ≥ 1000 W
+      if (power >= 1000) {
+        document.getElementById('alertPower').textContent = power;
+        safetyAlert.classList.add('show');
+      } else {
+        safetyAlert.classList.remove('show');
+      }
+
+      // 6. 显示结果卡片
+      resultCard.classList.add('show');
+      resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  </script>
+</body>
+</html>

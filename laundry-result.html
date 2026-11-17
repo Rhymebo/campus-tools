@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>洗涤建议 · 洗衣小助手</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .res-wrap { max-width: 720px; margin: 0 auto; padding: 0 16px 80px; }
+    .res-wrap h1 { font-size: 26px; color: #1a3a6b; margin: 28px 0 6px; }
+    .res-source {
+      display: inline-block;
+      font-size: 12.5px;
+      color: #3b7ddd;
+      background: #eef5ff;
+      padding: 5px 12px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    .advice-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 22px 24px;
+      box-shadow: 0 4px 18px rgba(20,40,80,.06);
+      margin-bottom: 14px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .advice-icon {
+      font-size: 26px;
+      line-height: 1.2;
+      flex-shrink: 0;
+      width: 38px;
+      text-align: center;
+    }
+    .advice-body h3 {
+      font-size: 15px;
+      color: #1a3a6b;
+      margin: 0 0 8px;
+    }
+    .advice-body p {
+      font-size: 14.5px;
+      color: #4a5b73;
+      line-height: 1.75;
+      margin: 0;
+    }
+    .advice-body b { color: #3b7ddd; }
+
+    .warn-card {
+      background: #fff7f2;
+      border: 1.5px solid #ffd9c4;
+    }
+    .warn-card .advice-body h3 { color: #c6440f; }
+    .warn-card .advice-body b { color: #c6440f; }
+
+    .res-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 28px;
+    }
+    .res-actions a {
+      flex: 1;
+      text-align: center;
+      padding: 14px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 700;
+      transition: all .18s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #3b7ddd, #2b5fc4);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(59,125,221,.3);
+    }
+    .btn-ghost {
+      background: #fff;
+      color: #3b7ddd;
+      border: 2px solid #d5e2f5;
+    }
+    .empty-tip {
+      text-align: center;
+      padding: 60px 20px;
+      color: #8a97ab;
+      font-size: 15px;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="laundry.html">← 返回洗衣小助手</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="res-wrap">
+      <h1>洗涤建议</h1>
+      <span class="res-source" id="resSource">—</span>
+
+      <div id="adviceList"></div>
+
+      <div class="res-actions">
+        <a class="btn-ghost" href="laundry.html">重新选择</a>
+        <a class="btn-primary" href="index.html">回首页</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/common.js"></script>
+  <script>
+    var mode = localStorage.getItem('laundryMode');
+    var list = document.getElementById('adviceList');
+    var src  = document.getElementById('resSource');
+
+    // ===== 核心：根据模式生成建议 =====
+    function buildAdvice() {
+      var advice = [];
+
+      if (mode === 'tag') {
+        var tag = JSON.parse(localStorage.getItem('laundryTag') || '{}');
+        if (Object.keys(tag).length === 0) return null;
+        src.textContent = '依据：你选择的标签图标';
+
+        // 水洗温度
+        if (tag.wash === 'wash-30') advice.push({ icon:'🌡️', title:'水温：≤30℃ 冷水', text:'用冷水和中性洗涤剂，避免热水导致缩水、掉色。' });
+        if (tag.wash === 'wash-40') advice.push({ icon:'🌡️', title:'水温：≤40℃ 温水', text:'温水洗涤更易去污，手洗或机洗都可以。' });
+        if (tag.wash === 'wash-60') advice.push({ icon:'🌡️', title:'水温：≤60℃ 热水', text:'高温洗涤适用于棉麻耐热织物，可杀菌去油。深色衣物仍建议分开洗。' });
+        if (tag.wash === 'wash-nd')  advice.push({ icon:'🚫', title:'这件衣服不能水洗', text:'需要送干洗。自己泡水可能导致缩水变形。', warn:true });
+
+        // 漂白
+        if (tag.bleach === 'bleach-ok')  advice.push({ icon:'🧴', title:'可以正常漂白', text:'可用常规含氯漂白剂，但建议先在不显眼处测试。' });
+        if (tag.bleach === 'bleach-oxy') advice.push({ icon:'🧴', title:'只能用氧漂', text:'不能用含氯漂白剂（84消毒液不行），氧漂（彩漂）可以。' });
+        if (tag.bleach === 'bleach-no')  advice.push({ icon:'🚫', title:'禁止漂白', text:'任何漂白剂都不能用，包括 84 和彩漂。', warn:true });
+
+        // 晾晒
+        if (tag.dry === 'dry-natural') advice.push({ icon:'🌿', title:'悬挂晾干', text:'用衣架挂到通风处自然晾干即可。' });
+        if (tag.dry === 'dry-flat')    advice.push({ icon:'🌿', title:'平摊晾干', text:'针织、毛衣类平铺晾干，挂着会被重力拉长变形。' });
+        if (tag.dry === 'dry-shade')   advice.push({ icon:'🌤️', title:'阴凉处晾干', text:'避开阳光直晒，放在通风阴凉处，防止褪色和面料老化。' });
+        if (tag.dry === 'dry-tumbler') advice.push({ icon:'🌀', title:'可以烘干', text:'可用烘干机低温烘干，注意不要烘太久。' });
+
+        // 熨烫
+        if (tag.iron === 'iron-low') advice.push({ icon:'♨️', title:'低温熨烫', text:'熨斗温度 ≤110℃，最好垫一层布再烫。' });
+        if (tag.iron === 'iron-mid') advice.push({ icon:'♨️', title:'中温熨烫', text:'熨斗温度 ≤150℃，可稍加蒸汽。' });
+        if (tag.iron === 'iron-no')  advice.push({ icon:'🚫', title:'不可熨烫', text:'熨斗一烫就会变形或留下亮痕，不要烫。', warn:true });
+
+        // 兜底
+        if (advice.length === 0) advice.push({ icon:'ℹ️', title:'未选择标签', text:'你没有选择任何图标，建议返回重新选择。' });
+      }
+
+      if (mode === 'quiz') {
+        var q = JSON.parse(localStorage.getItem('laundryQuiz') || '{}');
+        if (!q.fabric) return null;
+        src.textContent = '依据：你的 4 个回答';
+
+        // 按面料定基准
+        var base = {
+          cotton:    { temp:'≤40℃ 温水', prog:'常规机洗或手洗', extra:'冷水洗可减少缩水和掉色' },
+          wool:      { temp:'≤30℃ 冷水', prog:'羊毛/轻柔程序',   extra:'千万别搓揉，会起球缩水' },
+          silk:      { temp:'≤30℃ 冷水', prog:'手洗，轻柔按压',   extra:'不要拧绞，用毛巾吸干' },
+          synthetic: { temp:'≤40℃ 温水', prog:'常规机洗',        extra:'不要高温，容易变形' },
+          unknown:   { temp:'≤30℃ 冷水', prog:'最轻柔模式',      extra:'不确定的情况下越温和越安全' }
+        }[q.fabric];
+
+        advice.push({ icon:'💧', title:'水温与程序：' + base.temp, text:'推荐使用「' + base.prog + '」。' + base.extra + '。' });
+
+        // 特殊装饰
+        if (q.decor === 'print')  advice.push({ icon:'🎨', title:'翻面洗', text:'印花、烫画、刺绣朝内洗，避免摩擦脱落。不要用刷子刷图案。' });
+        if (q.decor === 'bead')   advice.push({ icon:'✨', title:'装洗衣袋', text:'水钻、亮片一定要装进洗衣袋，防止掉钻和刮伤其他衣服。建议手洗。' });
+        if (q.decor === 'zipper') advice.push({ icon:'🔗', title:'拉好拉链', text:'拉链拉到底、扣子扣好再洗，避免勾破面料。金属件最好包一层布。' });
+
+        // 颜色
+        if (q.color === 'light') advice.push({ icon:'⚪', title:'浅色分开洗', text:'浅色单独洗，别和深色混，否则会被染色。' });
+        if (q.color === 'dark')  advice.push({ icon:'⚫', title:'深色单独洗', text:'深色第一次洗可能掉色，建议单独洗，冷水洗，反面晾晒。' });
+        if (q.color === 'multicolor') advice.push({ icon:'🌈', title:'拼色小心', text:'拼色衣服容易互相串色，建议冷水快洗，不要浸泡。' });
+
+        // 版型
+        if (q.fit === 'slim') advice.push({ icon:'📏', title:'不要热水、不要甩太干', text:'紧身弹力衣物用温水和轻柔模式，脱水时间短一点，防止变形。' });
+        if (q.fit === 'structured') advice.push({ icon:'🧥', title:'建议少洗、送干洗', text:'有硬挺结构的衣服水洗容易变形塌陷，尽量局部清洁或送干洗。' });
+        if (q.fit === 'loose') advice.push({ icon:'🌿', title:'晾晒注意形状', text:'宽松衣服悬挂晾干时整理好肩线和下摆，防止挂着变形。' });
+
+        // 特殊组合判断
+        if (q.fabric === 'wool' || q.fabric === 'silk') {
+          advice.push({ icon:'⚠️', title:'这两个面料要特别当心', text:'羊毛和真丝都怕热水、怕搓揉、怕拧绞。建议手洗，用毛巾压干后平铺阴干。', warn:true });
+        }
+        if (q.decor === 'bead' && q.fabric === 'silk') {
+          advice.push({ icon:'⚠️', title:'建议还是送干洗', text:'真丝加亮片，手洗也有风险，比较贵的话建议干洗。', warn:true });
+        }
+      }
+
+      return advice;
+    }
+
+    // ===== 渲染 =====
+    var advice = buildAdvice();
+
+    if (!advice) {
+      list.innerHTML = '<div class="empty-tip">没有读取到你的选择数据。<br>请返回<a href="laundry.html" style="color:#3b7ddd;">重新选择</a>。</div>';
+      src.textContent = '';
+    } else {
+      var html = '';
+      advice.forEach(function (a) {
+        html += '<div class="advice-card' + (a.warn ? ' warn-card' : '') + '">' +
+                  '<div class="advice-icon">' + a.icon + '</div>' +
+                  '<div class="advice-body">' +
+                    '<h3>' + a.title + '</h3>' +
+                    '<p>' + a.text + '</p>' +
+                  '</div>' +
+                '</div>';
+      });
+      list.innerHTML = html;
+    }
+  </script>
+</body>
+</html>

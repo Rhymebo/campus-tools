@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>回答问题 · 洗衣小助手</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .quiz-wrap { max-width: 680px; margin: 0 auto; padding: 0 16px 80px; }
+    .quiz-wrap h1 { font-size: 26px; color: #1a3a6b; margin: 28px 0 8px; }
+    .quiz-wrap .sub { color: #6b7a92; font-size: 14.5px; margin: 0 0 30px; }
+
+    .q-block {
+      background: #fff;
+      border-radius: 16px;
+      padding: 22px 24px;
+      box-shadow: 0 4px 18px rgba(20,40,80,.06);
+      margin-bottom: 16px;
+    }
+    .q-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1a3a6b;
+      margin: 0 0 16px;
+    }
+    .q-title em {
+      font-style: normal;
+      color: #3b7ddd;
+      margin-right: 8px;
+    }
+    .q-options { display: flex; flex-direction: column; gap: 10px; }
+    .q-option {
+      padding: 13px 16px;
+      border: 2px solid #e8edf5;
+      border-radius: 11px;
+      cursor: pointer;
+      font-size: 14.5px;
+      color: #3c4d66;
+      transition: all .16s;
+      user-select: none;
+    }
+    .q-option:hover { border-color: #b8cdf0; background: #fafcff; }
+    .q-option.selected {
+      border-color: #3b7ddd;
+      background: #f0f6ff;
+      color: #1a3a6b;
+      font-weight: 600;
+    }
+
+    .quiz-submit {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #3b7ddd, #2b5fc4);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 20px;
+      box-shadow: 0 4px 14px rgba(59,125,221,.3);
+    }
+    .quiz-submit:disabled {
+      background: #c8d3e2;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+    .quiz-status {
+      text-align: center;
+      font-size: 13px;
+      color: #8a97ab;
+      margin: 16px 0 10px;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="laundry.html">← 返回洗衣小助手</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="quiz-wrap">
+      <h1>回答 4 个问题</h1>
+      <p class="sub">标签找不到了也没关系。按你手上这件衣服的实际情况选，四个都选完才能查看建议。</p>
+
+      <!-- 问题 1 -->
+      <div class="q-block" data-key="fabric">
+        <p class="q-title"><em>Q1</em>衣服的主要面料是什么？</p>
+        <div class="q-options">
+          <div class="q-option" data-val="cotton">棉 / 棉混纺（T恤、衬衫、卫衣）</div>
+          <div class="q-option" data-val="wool">羊毛 / 羊绒（毛衣、大衣）</div>
+          <div class="q-option" data-val="silk">真丝 / 缎面（丝巾、睡衣）</div>
+          <div class="q-option" data-val="synthetic">化纤 / 涤纶（运动服、冲锋衣）</div>
+          <div class="q-option" data-val="unknown">不确定 / 说不上来</div>
+        </div>
+      </div>
+
+      <!-- 问题 2 -->
+      <div class="q-block" data-key="decor">
+        <p class="q-title"><em>Q2</em>有没有特殊装饰？</p>
+        <div class="q-options">
+          <div class="q-option" data-val="none">没有，就是普通一件</div>
+          <div class="q-option" data-val="print">有印花 / 烫画 / 刺绣</div>
+          <div class="q-option" data-val="bead">有水钻 / 亮片 / 珠片</div>
+          <div class="q-option" data-val="zipper">有拉链 / 金属扣 / 皮质拼接</div>
+        </div>
+      </div>
+
+      <!-- 问题 3 -->
+      <div class="q-block" data-key="color">
+        <p class="q-title"><em>Q3</em>颜色深浅？</p>
+        <div class="q-options">
+          <div class="q-option" data-val="light">浅色（白、米、浅灰、浅粉）</div>
+          <div class="q-option" data-val="mid">中等（红、蓝、绿、黄）</div>
+          <div class="q-option" data-val="dark">深色（黑、藏青、深咖、深灰）</div>
+          <div class="q-option" data-val="multicolor">多色拼色 / 大面积撞色</div>
+        </div>
+      </div>
+
+      <!-- 问题 4 -->
+      <div class="q-block" data-key="fit">
+        <p class="q-title"><em>Q4</em>版型？</p>
+        <div class="q-options">
+          <div class="q-option" data-val="loose">宽松 / 直筒，不贴身</div>
+          <div class="q-option" data-val="regular">常规 / 合身</div>
+          <div class="q-option" data-val="slim">紧身 / 弹力 / 修身</div>
+          <div class="q-option" data-val="structured">有硬挺结构（西装、风衣、带垫肩）</div>
+        </div>
+      </div>
+
+      <p class="quiz-status" id="quizStatus">已完成 0 / 4</p>
+      <button class="quiz-submit" id="quizSubmit" disabled>查看洗涤建议</button>
+    </div>
+  </main>
+
+  <script src="js/common.js"></script>
+  <script>
+    var answers = {};
+    var blocks  = document.querySelectorAll('.q-block');
+    var status  = document.getElementById('quizStatus');
+    var submit  = document.getElementById('quizSubmit');
+
+    blocks.forEach(function (block) {
+      var key = block.getAttribute('data-key');
+      var opts = block.querySelectorAll('.q-option');
+
+      opts.forEach(function (opt) {
+        opt.addEventListener('click', function () {
+          opts.forEach(function (o) { o.classList.remove('selected'); });
+          opt.classList.add('selected');
+          answers[key] = opt.getAttribute('data-val');
+          updateStatus();
+        });
+      });
+    });
+
+    function updateStatus() {
+      var n = Object.keys(answers).length;
+      status.textContent = '已完成 ' + n + ' / 4';
+      submit.disabled = n < 4;
+    }
+
+    submit.addEventListener('click', function () {
+      localStorage.setItem('laundryMode', 'quiz');
+      localStorage.setItem('laundryQuiz', JSON.stringify(answers));
+      localStorage.removeItem('laundryTag');
+      location.href = 'laundry-result.html';
+    });
+  </script>
+</body>
+</html>

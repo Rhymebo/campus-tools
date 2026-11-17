@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>洗衣小助手 · 校园生活工具站</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .laundry-entry {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 16px 60px;
+    }
+    /* 上 1/3：标题区 */
+    .entry-hero {
+      padding: 48px 0 40px;
+      text-align: center;
+      border-bottom: 1px solid #e8edf5;
+      margin-bottom: 40px;
+    }
+    .entry-hero h1 {
+      font-size: 34px;
+      margin: 0 0 12px;
+      color: #1a3a6b;
+    }
+    .entry-hero p {
+      color: #6b7a92;
+      font-size: 15px;
+      margin: 0;
+      line-height: 1.7;
+    }
+    /* 下 2/3：左右两栏 */
+    .entry-choices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .choice-card {
+      display: block;
+      text-decoration: none;
+      background: #fff;
+      border: 2px solid #e8edf5;
+      border-radius: 20px;
+      padding: 36px 28px;
+      transition: all .22s;
+      box-shadow: 0 4px 18px rgba(20, 40, 80, .05);
+    }
+    .choice-card:hover {
+      border-color: #3b7ddd;
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(59, 125, 221, .16);
+    }
+    .choice-icon {
+      font-size: 46px;
+      line-height: 1;
+      margin-bottom: 20px;
+      display: block;
+    }
+    .choice-card h2 {
+      font-size: 20px;
+      color: #1a3a6b;
+      margin: 0 0 10px;
+    }
+    .choice-card p {
+      font-size: 14px;
+      color: #6b7a92;
+      line-height: 1.75;
+      margin: 0 0 20px;
+    }
+    .choice-cta {
+      font-size: 14px;
+      font-weight: 700;
+      color: #3b7ddd;
+    }
+    @media (max-width: 700px) {
+      .entry-choices { grid-template-columns: 1fr; gap: 16px; }
+      .entry-hero { padding: 32px 0 28px; }
+      .entry-hero h1 { font-size: 26px; }
+      .choice-card { padding: 28px 22px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">← 返回首页</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="laundry-entry">
+
+      <section class="entry-hero">
+        <h1>洗衣小助手</h1>
+        <p>不知道衣服该怎么洗？选一种方式，我们会给出温度、程序、晾晒和熨烫建议。</p>
+      </section>
+
+      <div class="entry-choices">
+
+        <a class="choice-card" href="laundry-tag.html">
+          <span class="choice-icon">🏷️</span>
+          <h2>找得到水洗标签</h2>
+          <p>衣服标签上的水洗标还清楚可见。点进去对照图标，选出和你衣服上一样的，直接得到洗涤方案。</p>
+          <span class="choice-cta">按标签识别 →</span>
+        </a>
+
+        <a class="choice-card" href="laundry-quiz.html">
+          <span class="choice-icon">❓</span>
+          <h2>水洗标签看不清 / 找不到了</h2>
+          <p>标签已经磨损，或者压根找不到。没关系，回答 4 个问题，也能给出对应的洗涤建议。</p>
+          <span class="choice-cta">回答 4 个问题 →</span>
+        </a>
+
+      </div>
+
+    </div>
+  </main>
+
+  <script src="js/common.js"></script>
+</body>
+</html>

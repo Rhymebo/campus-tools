@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="校园生活工具站：洗衣建议、宿舍电费估算和教室查找，三个本地静态工具。">
+  <title>校园生活工具站</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+
+  <header class="site-header" data-component="SiteHeader">
+    <div class="header-inner">
+      <a class="brand" href="index.html" aria-label="校园生活工具站首页">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 9.5 12 4l8 5.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1V9.5Z"></path>
+          </svg>
+        </span>
+        <span>校园生活工具站</span>
+      </a>
+      <nav class="site-nav" aria-label="主导航" data-component="PrimaryNav">
+        <a href="laundry.html" data-nav="laundry">洗衣小助手</a>
+        <a href="power.html" data-nav="power">电费计算器</a>
+        <a href="findplace.html" data-nav="findplace">快速找教室</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="page" data-component="HomePage">
+    <section class="home-hero" data-component="HomeHero" aria-labelledby="hero-title">
+      <p class="eyebrow">CAMPUS TOOLKIT</p>
+      <h1 id="hero-title">把宿舍生活里的小麻烦，做成三个能直接用的工具。</h1>
+      <p class="lede">洗衣前先确认标签，开电器前先算电费，上课前先找到教室。三个页面独立可用，不需要登录，也不会上传任何数据。</p>
+      <div class="hero-meta" aria-label="站点概览">
+        <span><b>3</b> 个工具</span>
+        <span><b>8</b> 个页面</span>
+        <span><b>0</b> 个外部依赖</span>
+      </div>
+    </section>
+
+    <section class="home-modules" data-component="HomeModules" aria-labelledby="modules-title">
+      <div class="section-head">
+        <h2 id="modules-title">选择你要做的事</h2>
+        <p>三个入口互相独立，随时可以回来换另一个。</p>
+      </div>
+      <div class="module-grid">
+        <a class="module-card" href="laundry.html" data-component="ModuleCard">
+          <span class="module-index">01</span>
+          <h3>洗衣小助手</h3>
+          <p>按水洗标选择，或回答 5 个问题，得到温度、程序、晾晒和熨烫建议。</p>
+          <span class="module-cta">进入洗衣小助手 →</span>
+        </a>
+        <a class="module-card" href="power.html" data-component="ModuleCard">
+          <span class="module-index">02</span>
+          <h3>电费计算器</h3>
+          <p>选电器或输入功率，填使用时长和电价，算出单次、每周和每月电费。</p>
+          <span class="module-cta">进入电费计算器 →</span>
+        </a>
+        <a class="module-card" href="findplace.html" data-component="ModuleCard">
+          <span class="module-index">03</span>
+          <h3>快速找教室</h3>
+          <p>输入“明德楼302”，在校园图和楼层图上同时高亮楼栋入口和教室。</p>
+          <span class="module-cta">进入快速找教室 →</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" data-component="SiteFooter">
+    <div class="footer-inner">
+      <p>校园生活工具站 · 本地静态页面，数据只保存在当前浏览器。</p>
+      <p>© <span data-year>2026</span> 校园生活工具站</p>
+    </div>
+  </footer>
+
+  <script src="js/common.js"></script>
+</body>
+</html>

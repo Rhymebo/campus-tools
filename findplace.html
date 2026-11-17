@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>快速找教室 · 校园生活工具站</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* 上 1/3：标题区 */
+    .find-hero {
+      text-align: center;
+      padding: 56px 16px 44px;
+      border-bottom: 1px solid #e8edf5;
+    }
+    .find-hero h1 {
+      font-size: 34px;
+      color: #1a3a6b;
+      margin: 0 0 12px;
+    }
+    .find-hero p {
+      color: #6b7a92;
+      font-size: 15px;
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    /* 下 2/3：输入区 */
+    .find-body {
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 48px 16px 80px;
+    }
+    .search-card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 32px 28px;
+      box-shadow: 0 6px 26px rgba(20,40,80,.08);
+    }
+    .search-card label {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      color: #2c3e5c;
+      margin-bottom: 12px;
+    }
+    .search-input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .search-input-row input {
+      flex: 1;
+      padding: 14px 16px;
+      border: 2px solid #dde3ec;
+      border-radius: 12px;
+      font-size: 16px;
+      font-family: inherit;
+      color: #1a2634;
+      background: #fafbfd;
+      box-sizing: border-box;
+      transition: border-color .2s;
+    }
+    .search-input-row input:focus {
+      outline: none;
+      border-color: #3b7ddd;
+      background: #fff;
+    }
+    .search-input-row button {
+      padding: 0 26px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #3b7ddd, #2b5fc4);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 4px 14px rgba(59,125,221,.3);
+      transition: transform .15s;
+    }
+    .search-input-row button:active { transform: scale(.97); }
+
+    .search-tip {
+      font-size: 13px;
+      color: #8a97ab;
+      line-height: 1.75;
+      margin: 0;
+    }
+    .search-tip code {
+      background: #eef2f8;
+      padding: 2px 7px;
+      border-radius: 5px;
+      color: #2b5fc4;
+      font-size: 12.5px;
+    }
+
+    .quick-links {
+      margin-top: 26px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    .quick-links span {
+      font-size: 12.5px;
+      color: #8a97ab;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .quick-links button {
+      padding: 7px 14px;
+      border: 1.5px solid #dde3ec;
+      border-radius: 20px;
+      background: #fff;
+      font-size: 13px;
+      color: #4a5b73;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all .16s;
+    }
+    .quick-links button:hover {
+      border-color: #3b7ddd;
+      color: #3b7ddd;
+    }
+
+    .err-msg {
+      display: none;
+      color: #d33a2c;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+    .err-msg.show { display: block; }
+
+    @media (max-width: 560px) {
+      .find-hero { padding: 36px 16px 30px; }
+      .find-hero h1 { font-size: 26px; }
+      .find-body { padding-top: 30px; }
+      .search-card { padding: 24px 20px; }
+      .search-input-row { flex-direction: column; }
+      .search-input-row button { padding: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">← 返回首页</a>
+    </div>
+  </header>
+
+  <main class="page">
+
+    <!-- 上 1/3 -->
+    <section class="find-hero">
+      <h1>快速找教室</h1>
+      <p>输入教室编号，同时在校园图和楼层图上看到该教室和楼栋入口的位置。</p>
+    </section>
+
+    <!-- 下 2/3 -->
+    <section class="find-body">
+      <div class="search-card">
+        <label for="roomInput">你要去的教室</label>
+        <div class="search-input-row">
+          <input type="text" id="roomInput" placeholder="例如：明德楼302" autocomplete="off">
+          <button id="goBtn">确认</button>
+        </div>
+        <p class="search-tip">
+          格式：<code>楼名 + 房间号</code>，例如 明德楼302、图书馆201、实验楼105。
+        </p>
+        <p class="err-msg" id="errMsg"></p>
+
+        <div class="quick-links">
+          <span>试试这几个</span>
+          <button data-fill="明德楼302">明德楼302</button>
+          <button data-fill="图书馆201">图书馆201</button>
+          <button data-fill="实验楼105">实验楼105</button>
+          <button data-fill="教学楼401">教学楼401</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="js/common.js"></script>
+  <script>
+    // ===== 校园建筑表（后续可换成 data/*.json 读取） =====
+    var CAMPUS = {
+      '明德楼':   { maxFloor: 5, x: 120, y: 90,  w: 110, h: 70 },
+      '图书馆':   { maxFloor: 4, x: 300, y: 80,  w: 100, h: 80 },
+      '实验楼':   { maxFloor: 4, x: 130, y: 240, w: 110, h: 70 },
+      '教学楼':   { maxFloor: 6, x: 310, y: 240, w: 120, h: 80 }
+    };
+
+    var input  = document.getElementById('roomInput');
+    var goBtn  = document.getElementById('goBtn');
+    var errMsg = document.getElementById('errMsg');
+
+    // 快捷按钮
+    document.querySelectorAll('.quick-links button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        input.value = b.getAttribute('data-fill');
+        input.focus();
+      });
+    });
+
+    function showError(msg) {
+      errMsg.textContent = msg;
+      errMsg.classList.add('show');
+    }
+    function clearError() {
+      errMsg.classList.remove('show');
+    }
+
+    function submit() {
+      clearError();
+      var raw = input.value.trim();
+      if (!raw) { showError('请先输入教室编号'); return; }
+
+      // 解析：楼名 + 房间号（3 位数字，第一位是楼层）
+      var match = raw.match(/^(.+?)(\d{3})$/);
+      if (!match) {
+        showError('格式不对，请输入「楼名+三位房间号」，例如 明德楼302');
+        return;
+      }
+      var buildingName = match[1].trim();
+      var roomNo = match[2];
+
+      // 楼名必须存在
+      if (!CAMPUS[buildingName]) {
+        showError('没有找到「' + buildingName + '」。目前支持：' + Object.keys(CAMPUS).join('、'));
+        return;
+      }
+
+      var floor = parseInt(roomNo.charAt(0), 10);
+      if (floor < 1 || floor > CAMPUS[buildingName].maxFloor) {
+        showError(buildingName + ' 只有 ' + CAMPUS[buildingName].maxFloor + ' 层，没有第 ' + floor + ' 层');
+        return;
+      }
+
+      // 存起来，跳结果页
+      localStorage.setItem('targetRoom', JSON.stringify({
+        building: buildingName,
+        room: roomNo,
+        floor: floor
+      }));
+      location.href = 'findplace-result.html';
+    }
+
+    goBtn.addEventListener('click', submit);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') submit();
+    });
+    input.addEventListener('input', clearError);
+  </script>
+</body>
+</html>
