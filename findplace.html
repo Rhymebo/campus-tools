@@ -163,21 +163,15 @@
       <div class="search-card">
         <label for="roomInput">你要去的教室</label>
         <div class="search-input-row">
-          <input type="text" id="roomInput" placeholder="例如：明德楼302" autocomplete="off">
+          <input type="text" id="roomInput" placeholder="例如：正兴楼302" autocomplete="off">
           <button id="goBtn">确认</button>
         </div>
         <p class="search-tip">
-          格式：<code>楼名 + 房间号</code>，例如 明德楼302、图书馆201、实验楼105。
+          格式：<code>楼名 + 房间号</code>，例如正兴楼302；快捷按钮可先填入楼名。
         </p>
         <p class="err-msg" id="errMsg"></p>
 
-        <div class="quick-links">
-          <span>试试这几个</span>
-          <button data-fill="明德楼302">明德楼302</button>
-          <button data-fill="图书馆201">图书馆201</button>
-          <button data-fill="实验楼105">实验楼105</button>
-          <button data-fill="教学楼401">教学楼401</button>
-        </div>
+        <div class="quick-links" aria-label="选择教学楼"><span>选择教学楼后补上房间号</span><button type="button" data-fill="正兴楼">正兴楼</button><button type="button" data-fill="精诚楼">精诚楼</button><button type="button" data-fill="创智楼">创智楼</button><button type="button" data-fill="青越活动中心">青越活动中心</button><button type="button" data-fill="芯越楼">芯越楼</button><button type="button" data-fill="竞越体育活动中心">竞越体育活动中心</button></div>
       </div>
     </section>
 
@@ -221,7 +215,7 @@
       // 解析：楼名 + 房间号（3 位数字，第一位是楼层）
       var match = raw.match(/^(.+?)(\d{3})$/);
       if (!match) {
-        showError('格式不对，请输入「楼名+三位房间号」，例如 明德楼302');
+        showError('格式不对，请输入「楼名+三位房间号」，例如正兴楼302');
         return;
       }
       var buildingName = match[1].trim();
