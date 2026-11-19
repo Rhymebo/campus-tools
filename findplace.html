@@ -165,7 +165,7 @@
     .searchwrap{max-width:none;}
   }
   @media (max-width:640px){
-    .sitebar-inner{padding:9px 14px;}
+    .-inner{padding:9px 14px;}
     .snav a{padding:6px 8px;font-size:13px;}
     .hdr{padding:10px 14px;gap:10px 12px;}
     .brand{flex:1 1 100%;min-width:0;}
@@ -181,32 +181,22 @@
 </style>
 </head>
 <body>
-<header class="sitebar">
-  <div class="sitebar-inner">
-    <a class="sbrand" href="index.html" aria-label="校园生活工具站首页">
-      <span class="sbrand-mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 9.5 12 4l8 5.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1V9.5Z"></path>
-        </svg>
-      </span>
-      <span>校园生活工具站</span>
-    </a>
-    <nav class="snav" aria-label="主导航">
-      <a href="laundry.html">洗衣小助手</a>
-      <a href="power.html">电费计算器</a>
-      <a href="findplace.html" aria-current="page">快速找教室</a>
-    </nav>
-  </div>
-</header>
 <header class="appbar">
   <div class="hdr">
-    <div class="brand">
-      <div class="logo">校</div>
-      <div>
-        <h1>快速找教室</h1>
-        <p>正心楼 · 精诚楼（原南科研楼） · 芯越楼（原国防楼）</p>
-      </div>
-    </div>
+  <div class="brand">
+<a class="logo" href="index.html" title="返回首页" aria-label="返回首页"
+   style="width:auto;padding:0 12px;gap:6px;text-decoration:none;font-size:13px;font-weight:600;">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+     stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex:0 0 auto;">
+<path d="M15 18l-6-6 6-6"></path>
+</svg>
+<span>返回首页</span>
+</a>
+<div>
+<h1>快速找教室</h1>
+<p>正心楼 · 精诚楼 · 芯越楼</p>
+</div>
+</div>
     <div class="searchwrap">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
         <circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.6-3.6"></path>
@@ -337,12 +327,12 @@ const CAMPUS = {
     { key:'shaowei', name:'绍味堂', kind:'food', x:436, y:61, w:66, h:57, label:'绍味堂', small:true },
     { key:'shaoxian', name:'绍贤雅居', kind:'dorm', x:611, y:18, w:353, h:175, label:'绍贤雅居', entrance:[790,193] },
     { key:'chuangzhi', name:'创智楼', kind:'teach', x:194, y:282, w:235, h:132, label:'创智楼', entrance:[312,414] },
-    { key:'jingcheng', name:'精诚楼', alias:'南科研楼', kind:'teach', x:643, y:279, w:318, h:128, label:'精诚楼', entrance:[643,343] },
+    { key:'jingcheng', name:'精诚楼', kind:'teach', x:643, y:279, w:318, h:128, label:'精诚楼', entrance:[643,343] },
     { key:'zhengxin', name:'正心楼', kind:'teach', x:461, y:286, w:132, h:127, label:'正心楼', entrance:[527,413] },
     { key:'caochang', name:'操场', kind:'ground', x:14, y:441, w:307, h:209, label:'操场' },
     { key:'jingyue', name:'竞越体育活动中心', kind:'sport', x:343, y:482, w:100, h:114, label:'竞越体育活动中心', small:true },
     { key:'qingyue', name:'青越文化活动中心', kind:'sport', x:589, y:482, w:132, h:114, label:'青越文化活动中心', small:true },
-    { key:'xinyue', name:'芯越楼', alias:'国防楼', kind:'teach', x:761, y:454, w:203, h:167, label:'芯越楼', entrance:[761,537] }
+    { key:'xinyue', name:'芯越楼', alias:'（芯越科创中心）', kind:'teach', x:761, y:454, w:203, h:167, label:'芯越楼', entrance:[761,537] }
   ],
   roads: [
     'M 500 10 L 500 660',
