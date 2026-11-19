@@ -55,6 +55,8 @@
       line-height: 1;
       margin-bottom: 20px;
       display: block;
+      text-decoration: none;
+      border-bottom: none;
     }
     .choice-card h2 {
       font-size: 20px;
@@ -78,6 +80,16 @@
       .entry-hero h1 { font-size: 26px; }
       .choice-card { padding: 28px 22px; }
     }
+.choice-card,
+.choice-card:hover,
+.choice-card * {
+  text-decoration: none;
+}
+
+.choice-card:hover .choice-cta {
+  text-decoration: underline;
+}
+
   </style>
 </head>
 <body>
