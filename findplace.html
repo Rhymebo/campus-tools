@@ -1,252 +1,1693 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>快速找教室 · 校园生活工具站</title>
-  <link rel="stylesheet" href="css/style.css">
-  <style>
-    /* 上 1/3：标题区 */
-    .find-hero {
-      text-align: center;
-      padding: 56px 16px 44px;
-      border-bottom: 1px solid #e8edf5;
-    }
-    .find-hero h1 {
-      font-size: 34px;
-      color: #1a3a6b;
-      margin: 0 0 12px;
-    }
-    .find-hero p {
-      color: #6b7a92;
-      font-size: 15px;
-      line-height: 1.7;
-      margin: 0;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>校园教室导览 · 正心楼 / 精诚楼 / 芯越楼</title>
+<style>
+  :root{
+    --ink:#152523; --muted:#6b7c78; --line:#e3e9e6;
+    --accent:#2f7d6d; --accent-soft:#e6f2ee;
+    --bg:#f1f4f2; --card:#ffffff;
+    --route:#e2453c;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:"Microsoft YaHei","PingFang SC","Hiragino Sans GB",system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  header{
+    position:sticky; top:0; z-index:30;
+    background:rgba(255,255,255,.92); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .hdr{
+    max-width:1560px; margin:0 auto; padding:12px 20px;
+    display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .logo{
+    width:34px;height:34px;border-radius:10px;background:var(--accent);
+    display:grid;place-items:center;color:#fff;font-weight:700;font-size:15px;
+    box-shadow:0 4px 10px rgba(47,125,109,.25);
+  }
+  .brand h1{font-size:16px;margin:0;font-weight:700;letter-spacing:.5px;}
+  .brand p{margin:0;font-size:11px;color:var(--muted);letter-spacing:.3px;}
+  .searchwrap{position:relative;flex:1;min-width:260px;max-width:460px;margin-left:auto;}
+  .searchwrap input{
+    width:100%;padding:10px 14px 10px 38px;border-radius:12px;border:1px solid var(--line);
+    background:#f7f9f8;font-size:13.5px;outline:none;font-family:inherit;color:var(--ink);
+    transition:.18s;
+  }
+  .searchwrap input:focus{background:#fff;border-color:var(--accent);box-shadow:0 0 0 3px rgba(47,125,109,.10);}
+  .searchwrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.45;}
+  .results{
+    position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid var(--line);
+    border-radius:12px;box-shadow:0 16px 40px rgba(20,40,35,.14);overflow:hidden;display:none;z-index:50;
+  }
+  .results.show{display:block;}
+  .result{
+    padding:9px 12px;font-size:13px;display:flex;gap:8px;align-items:baseline;cursor:pointer;
+    border-bottom:1px solid #f2f5f3;
+  }
+  .result:last-child{border-bottom:none;}
+  .result:hover,.result.active{background:var(--accent-soft);}
+  .result b{font-weight:700;}
+  .result span{color:var(--muted);font-size:11.5px;}
+  .result .bld{margin-left:auto;color:var(--accent);font-size:11px;white-space:nowrap;}
 
-    /* 下 2/3：输入区 */
-    .find-body {
-      max-width: 560px;
-      margin: 0 auto;
-      padding: 48px 16px 80px;
-    }
-    .search-card {
-      background: #fff;
-      border-radius: 18px;
-      padding: 32px 28px;
-      box-shadow: 0 6px 26px rgba(20,40,80,.08);
-    }
-    .search-card label {
-      display: block;
-      font-size: 15px;
-      font-weight: 700;
-      color: #2c3e5c;
-      margin-bottom: 12px;
-    }
-    .search-input-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .search-input-row input {
-      flex: 1;
-      padding: 14px 16px;
-      border: 2px solid #dde3ec;
-      border-radius: 12px;
-      font-size: 16px;
-      font-family: inherit;
-      color: #1a2634;
-      background: #fafbfd;
-      box-sizing: border-box;
-      transition: border-color .2s;
-    }
-    .search-input-row input:focus {
-      outline: none;
-      border-color: #3b7ddd;
-      background: #fff;
-    }
-    .search-input-row button {
-      padding: 0 26px;
-      border: none;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #3b7ddd, #2b5fc4);
-      color: #fff;
-      font-size: 15px;
-      font-weight: 700;
-      font-family: inherit;
-      cursor: pointer;
-      white-space: nowrap;
-      box-shadow: 0 4px 14px rgba(59,125,221,.3);
-      transition: transform .15s;
-    }
-    .search-input-row button:active { transform: scale(.97); }
+  .wrap{max-width:1560px;margin:0 auto;padding:16px 20px 40px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start;}
+  .main{min-width:0;}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+  .tab{
+    border:1px solid var(--line);background:#fff;color:var(--ink);
+    padding:9px 16px;border-radius:12px;font-size:13.5px;cursor:pointer;font-family:inherit;
+    display:flex;align-items:center;gap:8px;transition:.16s;font-weight:600;
+  }
+  .tab:hover{border-color:#c9d8d3;transform:translateY(-1px);}
+  .tab.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 6px 16px rgba(47,125,109,.22);}
+  .tab .dot{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.6;}
+  .tab em{font-style:normal;font-weight:400;font-size:11px;opacity:.75;}
 
-    .search-tip {
-      font-size: 13px;
-      color: #8a97ab;
-      line-height: 1.75;
-      margin: 0;
-    }
-    .search-tip code {
-      background: #eef2f8;
-      padding: 2px 7px;
-      border-radius: 5px;
-      color: #2b5fc4;
-      font-size: 12.5px;
-    }
+  .floorbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 10px;min-height:34px;}
+  .floorbar .lbl{font-size:12px;color:var(--muted);margin-right:4px;}
+  .chip{
+    min-width:38px;height:30px;padding:0 10px;border-radius:9px;border:1px solid var(--line);
+    background:#fff;font-size:12.5px;cursor:pointer;font-family:inherit;color:var(--ink);font-weight:600;
+  }
+  .chip:hover{border-color:#c9d8d3;}
+  .chip.active{background:#152523;color:#fff;border-color:#152523;}
+  .chip.dim{opacity:.35;cursor:not-allowed;}
 
-    .quick-links {
-      margin-top: 26px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-    }
-    .quick-links span {
-      font-size: 12.5px;
-      color: #8a97ab;
-      width: 100%;
-      text-align: center;
-      margin-bottom: 4px;
-    }
-    .quick-links button {
-      padding: 7px 14px;
-      border: 1.5px solid #dde3ec;
-      border-radius: 20px;
-      background: #fff;
-      font-size: 13px;
-      color: #4a5b73;
-      font-family: inherit;
-      cursor: pointer;
-      transition: all .16s;
-    }
-    .quick-links button:hover {
-      border-color: #3b7ddd;
-      color: #3b7ddd;
-    }
+  .stage{
+    background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:10px 12px;box-shadow:0 1px 2px rgba(20,40,35,.04),0 12px 30px rgba(20,40,35,.05);
+    position:relative;overflow:hidden;
+  }
+  .stage svg{display:block;width:100%;height:auto;touch-action:manipulation;}
+  .hint{
+    position:absolute;left:16px;bottom:12px;font-size:11px;color:var(--muted);
+    background:rgba(255,255,255,.9);padding:4px 9px;border-radius:8px;border:1px solid var(--line);
+  }
 
-    .err-msg {
-      display: none;
-      color: #d33a2c;
-      font-size: 13px;
-      margin-top: 10px;
-    }
-    .err-msg.show { display: block; }
+  .side{display:flex;flex-direction:column;gap:14px;position:sticky;top:80px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 15px;box-shadow:0 1px 2px rgba(20,40,35,.04);}
+  .card h3{margin:0 0 10px;font-size:13px;letter-spacing:.4px;display:flex;align-items:center;gap:7px;}
+  .card h3 .bar{width:3px;height:13px;border-radius:2px;background:var(--accent);}
+  .card .sub{font-size:11.5px;color:var(--muted);line-height:1.6;margin:-2px 0 10px;}
 
-    @media (max-width: 560px) {
-      .find-hero { padding: 36px 16px 30px; }
-      .find-hero h1 { font-size: 26px; }
-      .find-body { padding-top: 30px; }
-      .search-card { padding: 24px 20px; }
-      .search-input-row { flex-direction: column; }
-      .search-input-row button { padding: 14px; }
-    }
-  </style>
+  .startrow{display:flex;gap:6px;flex-wrap:wrap;}
+  .startbtn{
+    border:1px solid var(--line);background:#f8faf9;border-radius:9px;padding:6px 10px;
+    font-size:12px;cursor:pointer;font-family:inherit;color:var(--ink);
+  }
+  .startbtn.active{background:var(--accent-soft);border-color:#b9d8cf;color:#1d5a4e;font-weight:700;}
+
+  .empty{font-size:12.5px;color:var(--muted);line-height:1.7;}
+  .empty b{color:var(--ink);}
+
+  .routeinfo .target{font-size:15px;font-weight:700;display:flex;align-items:center;gap:6px;margin-bottom:2px;}
+  .routeinfo .where{font-size:11.5px;color:var(--muted);margin-bottom:10px;}
+  .steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;}
+  .steps li{display:flex;gap:9px;font-size:12.3px;line-height:1.55;}
+  .steps .n{
+    flex:0 0 19px;height:19px;border-radius:50%;background:var(--accent-soft);color:#1d5a4e;
+    font-size:11px;display:grid;place-items:center;font-weight:700;margin-top:1px;
+  }
+  .sum{
+    margin-top:12px;padding-top:10px;border-top:1px dashed var(--line);
+    display:flex;justify-content:space-between;font-size:12px;color:var(--muted);
+  }
+  .sum b{color:var(--ink);font-size:14px;}
+
+  .legend{display:flex;flex-wrap:wrap;gap:6px 12px;}
+  .lg{display:flex;align-items:center;gap:5px;font-size:11px;color:#4a5b57;}
+  .sw{width:12px;height:12px;border-radius:3px;border:1px solid;}
+  .notes{font-size:10.5px;color:var(--muted);line-height:1.7;margin-top:10px;border-top:1px dashed var(--line);padding-top:8px;}
+
+  /* svg */
+  .room{cursor:pointer;transition:filter .12s;}
+  .room:hover{filter:brightness(.965);}
+  .room.sel{stroke:#e2453c !important;stroke-width:2.6 !important;filter:drop-shadow(0 0 5px rgba(226,69,60,.35));}
+  .bldg{cursor:pointer;}
+  .bldg:hover .bshape{stroke:var(--accent);stroke-width:4;}
+  .route{fill:none;stroke:var(--route);stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:10 8;animation:dash 1.1s linear infinite;filter:drop-shadow(0 1px 2px rgba(226,69,60,.28));}
+  @keyframes dash{to{stroke-dashoffset:-36;}}
+  .pin{animation:pulse 1.8s ease-out infinite;}
+  @keyframes pulse{0%{r:6;opacity:.9}70%{r:15;opacity:0}100%{r:15;opacity:0}}
+  .lbl{font-family:inherit;pointer-events:none;user-select:none;}
+  .tiny{font-family:inherit;pointer-events:none;}
+
+  @media (max-width:1080px){
+    .wrap{grid-template-columns:1fr;padding:12px;}
+    .side{position:static;flex-direction:row;flex-wrap:wrap;}
+    .side .card{flex:1 1 300px;}
+    .searchwrap{max-width:none;}
+  }
+</style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="header-inner">
-      <a class="brand" href="index.html">← 返回首页</a>
+<header>
+  <div class="hdr">
+    <div class="brand">
+      <div class="logo">校</div>
+      <div>
+        <h1>校园教室导览</h1>
+        <p>正心楼 · 精诚楼（原南科研楼） · 芯越楼（原国防楼）</p>
+      </div>
     </div>
-  </header>
+    <div class="searchwrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.6-3.6"></path>
+      </svg>
+      <input id="q" type="text" placeholder="搜索教室 / 房间号，例如 305、精诚楼201、国防楼111" autocomplete="off">
+      <div class="results" id="results"></div>
+    </div>
+  </div>
+</header>
 
-  <main class="page">
+<div class="wrap">
+  <main class="main">
+    <nav class="tabs" id="tabs"></nav>
+    <div class="floorbar" id="floorbar"></div>
+    <div class="stage">
+      <svg id="map" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="hint" id="hint">点击建筑进入楼层图 · 点击房间查看位置</div>
+    </div>
+  </main>
 
-    <!-- 上 1/3 -->
-    <section class="find-hero">
-      <h1>快速找教室</h1>
-      <p>输入教室编号，同时在校园图和楼层图上看到该教室和楼栋入口的位置。</p>
+  <aside class="side">
+    <section class="card">
+      <h3><span class="bar"></span>从这里出发</h3>
+      <div class="sub">选择起点后，搜索或点击教室即可自动规划最便捷路线。</div>
+      <div class="startrow" id="startrow"></div>
     </section>
 
-    <!-- 下 2/3 -->
-    <section class="find-body">
-      <div class="search-card">
-        <label for="roomInput">你要去的教室</label>
-        <div class="search-input-row">
-          <input type="text" id="roomInput" placeholder="例如：正兴楼302" autocomplete="off">
-          <button id="goBtn">确认</button>
-        </div>
-        <p class="search-tip">
-          格式：<code>楼名 + 房间号</code>，例如正兴楼302；快捷按钮可先填入楼名。
-        </p>
-        <p class="err-msg" id="errMsg"></p>
-
-        <div class="quick-links" aria-label="选择教学楼"><span>选择教学楼后补上房间号</span><button type="button" data-fill="正兴楼">正兴楼</button><button type="button" data-fill="精诚楼">精诚楼</button><button type="button" data-fill="创智楼">创智楼</button><button type="button" data-fill="青越活动中心">青越活动中心</button><button type="button" data-fill="芯越楼">芯越楼</button><button type="button" data-fill="竞越体育活动中心">竞越体育活动中心</button></div>
+    <section class="card" id="routecard">
+      <h3><span class="bar"></span>路线指引</h3>
+      <div id="routebody">
+        <div class="empty">还没有选择目的地。<br>试试搜索 <b>305</b>，或直接点击平面图上的房间。</div>
       </div>
     </section>
 
-  </main>
+    <section class="card">
+      <h3><span class="bar"></span>图例</h3>
+      <div class="legend" id="legend"></div>
+      <div class="notes">
+        平面图按原图房间相对位置抽象绘制，非精确比例；楼梯、电梯位置为示意。<br>
+        实线为墙、不可穿行，实际通行以现场为准。
+      </div>
+    </section>
+  </aside>
+</div>
 
-  <script src="js/common.js"></script>
-  <script>
-    // ===== 校园建筑表（后续可换成 data/*.json 读取） =====
-    var CAMPUS = {
-      '明德楼':   { maxFloor: 5, x: 120, y: 90,  w: 110, h: 70 },
-      '图书馆':   { maxFloor: 4, x: 300, y: 80,  w: 100, h: 80 },
-      '实验楼':   { maxFloor: 4, x: 130, y: 240, w: 110, h: 70 },
-      '教学楼':   { maxFloor: 6, x: 310, y: 240, w: 120, h: 80 }
+<script>
+/* ============================================================
+   基础工具
+   ============================================================ */
+const NS = 'http://www.w3.org/2000/svg';
+const svg = document.getElementById('map');
+const $ = (s) => document.querySelector(s);
+
+function E(tag, attrs, parent){
+  const n = document.createElementNS(NS, tag);
+  if (attrs) for (const k in attrs){
+    if (attrs[k] === null || attrs[k] === undefined) continue;
+    n.setAttribute(k, attrs[k]);
+  }
+  if (parent) parent.appendChild(n);
+  return n;
+}
+function txt(parent, x, y, s, opts = {}){
+  const t = E('text', {
+    x, y,
+    'text-anchor': opts.anchor || 'middle',
+    'font-size': opts.size || 12,
+    'font-weight': opts.weight || 500,
+    fill: opts.fill || '#20302d',
+    'dominant-baseline': opts.baseline || 'middle',
+    class: opts.cls || 'lbl'
+  }, parent);
+  t.textContent = s;
+  return t;
+}
+
+/* 房间类型配色 */
+const TYPES = {
+  class:    { f:'#d9f2e6', s:'#3c9176', t:'#0f4c3b', n:'教室' },
+  lab:      { f:'#d8e9fb', s:'#3f80c0', t:'#123f63', n:'实验室' },
+  office:   { f:'#fde7d3', s:'#cf7a35', t:'#6b3410', n:'办公室' },
+  discuss:  { f:'#fdf1c8', s:'#c3a02a', t:'#6b5410', n:'讨论室' },
+  meeting:  { f:'#dfe7fb', s:'#5a6bc9', t:'#232f6b', n:'会议室' },
+  study:    { f:'#e6e4fb', s:'#6f68d6', t:'#2f2a6b', n:'研究生工作室' },
+  rest:     { f:'#f4e4fb', s:'#a06bc7', t:'#4d2a66', n:'休息室' },
+  wc:       { f:'#e2f4f6', s:'#4aa3ad', t:'#154c52', n:'洗手间' },
+  service:  { f:'#eceff4', s:'#8b98a8', t:'#3b4652', n:'机房/服务' },
+  library:  { f:'#e9f0e1', s:'#7a9a5b', t:'#33481f', n:'图书馆' },
+  hall:     { f:'#f7f8f6', s:'#b8c0b8', t:'#55605a', n:'公共空间' },
+  atrium:   { f:'#f6f8f9', s:'#c8d0d6', t:'#8a959e', n:'中庭' }
+};
+
+/* 行 / 列 排布工具 */
+function row(y, h, items, x0, x1, gap = 4){
+  const sum = items.reduce((a, b) => a + (b[3] || 1), 0);
+  const W = (x1 - x0) - gap * (items.length - 1);
+  let x = x0;
+  return items.map(it => {
+    const w = W * (it[3] || 1) / sum;
+    const r = { id: it[0], label: it[1], type: it[2], x, y, w, h };
+    x += w + gap;
+    return r;
+  });
+}
+function col(x, w, items, y0, y1, gap = 4){
+  const sum = items.reduce((a, b) => a + (b[3] || 1), 0);
+  const H = (y1 - y0) - gap * (items.length - 1);
+  let y = y0;
+  return items.map(it => {
+    const h = H * (it[3] || 1) / sum;
+    const r = { id: it[0], label: it[1], type: it[2], x, y, w, h };
+    y += h + gap;
+    return r;
+  });
+}
+const room = (id, label, type, x, y, w, h, extra) => Object.assign({ id, label, type, x, y, w, h }, extra || {});
+
+/* ============================================================
+   校园总览数据
+   ============================================================ */
+const CAMPUS = {
+  W: 1000, H: 690,
+  gateS: [735, 660],
+  gateN: [735, 14],
+  buildings: [
+    { key:'qiuchang', name:'球场', kind:'ground', x:18, y:54, w:153, h:364, label:'球场' },
+    { key:'shaoxin', name:'绍信学生公寓', kind:'dorm', x:193, y:59, w:236, h:132, label:'绍信学生公寓', entrance:[300,191] },
+    { key:'shaowei', name:'绍味堂', kind:'food', x:436, y:61, w:66, h:57, label:'绍味堂', small:true },
+    { key:'shaoxian', name:'绍贤雅居', kind:'dorm', x:611, y:18, w:353, h:175, label:'绍贤雅居', entrance:[790,193] },
+    { key:'chuangzhi', name:'创智楼', kind:'teach', x:194, y:282, w:235, h:132, label:'创智楼', entrance:[312,414] },
+    { key:'jingcheng', name:'精诚楼', alias:'南科研楼', kind:'teach', x:643, y:279, w:318, h:128, label:'精诚楼', entrance:[643,343] },
+    { key:'zhengxin', name:'正心楼', kind:'teach', x:461, y:286, w:132, h:127, label:'正心楼', entrance:[527,413] },
+    { key:'caochang', name:'操场', kind:'ground', x:14, y:441, w:307, h:209, label:'操场' },
+    { key:'jingyue', name:'竞越体育活动中心', kind:'sport', x:343, y:482, w:100, h:114, label:'竞越体育活动中心', small:true },
+    { key:'qingyue', name:'青越文化活动中心', kind:'sport', x:589, y:482, w:132, h:114, label:'青越文化活动中心', small:true },
+    { key:'xinyue', name:'芯越楼', alias:'国防楼', kind:'teach', x:761, y:454, w:203, h:167, label:'芯越楼', entrance:[761,537] }
+  ],
+  roads: [
+    'M 500 10 L 500 660',
+    'M 500 610 L 761 610 L 761 537',
+    'M 500 343 L 643 343',
+    'M 500 413 L 527 413',
+    'M 500 191 L 790 191',
+    'M 500 413 L 312 414'
+  ]
+};
+
+/* ============================================================
+   正心楼  —— 6 层
+   ============================================================ */
+const ZX_3 = {
+  level: 3, H: 640,
+  rooms: [
+    ...row(70, 72, [
+      ['wc','洗手间','wc',0.7], ['308','教室','class'], ['309','教室','class'],
+      ['311','教室','class'], ['312','教室','class'], ['313','教室','class']
+    ], 240, 862),
+    ...col(860, 72, [
+      ['314','休息室','rest',0.55], ['315','教室','class'], ['316','教室','class'],
+      ['319','教室','class'], ['320','教室','class'], ['322','教室','class'],
+      ['324','教室','class'], ['325','休息室','rest',0.55]
+    ], 70, 502),
+    ...row(500, 72, [
+      ['dx','讨论室','discuss',0.85], ['305','教室','class'], ['304','教室','class'],
+      ['303','教室','class'], ['302','教室','class'], ['301','教室','class']
+    ], 70, 932),
+    room('lib','图书馆','library',70,140,130,360,{vertical:true}),
+    room('310','教室','class',340,180,300,58),
+    room('321','教室','class',760,252,60,146),
+    room('306','教室','class',340,402,300,58),
+    room('311A','311-A 休息室','rest',646,180,52,58),
+    room('311B','311-B 休息室','rest',646,246,52,58),
+    room('317','317 讨论室','discuss',714,252,42,66),
+    room('318','318 讨论室','discuss',714,326,42,66),
+    room('323','323 讨论室','discuss',662,402,58,58),
+    room('tea','茶水室','service',240,440,56,54),
+    room('tel','电话间','service',300,440,56,54)
+  ],
+  corridors: [[[220,160],[840,160],[840,480],[220,480],[220,160]]],
+  stairs: [
+    { id:'nw', label:'楼梯', x:220, y:160 },
+    { id:'ne', label:'电梯', x:840, y:160, kind:'lift' },
+    { id:'sw', label:'楼梯', x:220, y:480 },
+    { id:'se', label:'电梯', x:840, y:480, kind:'lift' }
+  ],
+  atrium: { x:240, y:180, w:580, h:280, label:'中庭上空' }
+};
+
+const ZX_4 = {
+  level: 4, H: 640,
+  rooms: [
+    ...row(70, 72, [
+      ['wc','洗手间','wc',0.7], ['409','教室','class'], ['410','教室','class'],
+      ['412','教室','class'], ['413','教室','class'], ['414','教室','class',0.8], ['415','休息室','rest',0.8]
+    ], 240, 862),
+    ...col(860, 72, [
+      ['416','教室','class'], ['417','教室','class'], ['420','教室','class'],
+      ['421','教室','class'], ['423','教室','class'], ['425','教室','class']
+    ], 70, 502),
+    ...row(500, 72, [
+      ['dx','讨论室','discuss',0.85], ['406','教室','class'], ['405','教室','class'],
+      ['404','教室','class'], ['403','教室','class'], ['402','教室','class'], ['401','教室','class']
+    ], 70, 932),
+    room('lib','图书馆','library',70,140,130,360,{vertical:true}),
+    room('411','教室','class',340,180,300,58),
+    room('422','教室','class',760,252,60,146),
+    room('407','教室','class',340,402,300,58),
+    room('411A','411-A 休息室','rest',646,180,52,58),
+    room('418','418 讨论室','discuss',714,252,42,66),
+    room('419','419 讨论室','discuss',714,326,42,66),
+    room('424','424 讨论室','discuss',662,402,58,58),
+    room('tea','茶水间','service',240,440,56,54),
+    room('tel','电话间','service',300,440,56,54)
+  ],
+  corridors: [[[220,160],[840,160],[840,480],[220,480],[220,160]]],
+  stairs: [
+    { id:'nw', label:'楼梯', x:220, y:160 },
+    { id:'ne', label:'电梯', x:840, y:160, kind:'lift' },
+    { id:'sw', label:'楼梯', x:220, y:480 },
+    { id:'se', label:'电梯', x:840, y:480, kind:'lift' }
+  ],
+  atrium: { x:240, y:180, w:580, h:280, label:'中庭上空' }
+};
+
+const ZX_5 = {
+  level: 5, H: 640,
+  rooms: [
+    ...row(70, 72, [
+      ['506','多媒体阅览室','study',1.3], ['wc','洗手间','wc',0.6],
+      ['507','教室','class'], ['512','教室','class'], ['513','教室','class']
+    ], 240, 862),
+    ...col(860, 72, [
+      ['514','休息室','rest',0.6], ['515','教室','class'], ['518','教室','class'],
+      ['521','教室','class'], ['522','休息室','rest',0.6]
+    ], 70, 502),
+    ...row(500, 72, [
+      ['s1','静音休息室','rest',0.8], ['s2','静音休息室','rest',0.8], ['s3','静音休息室','rest',0.8],
+      ['503','教室','class'], ['502','教室','class'], ['501','教室','class']
+    ], 70, 932),
+    room('lib','图书馆','library',70,140,130,360,{vertical:true}),
+    room('510','教室','class',340,180,300,58),
+    room('519','教室','class',760,252,60,146),
+    room('504','教室','class',340,402,300,58),
+    room('511','休息室','rest',640,180,58,58),
+    room('516','516 讨论室','discuss',714,252,42,60),
+    room('517','517 讨论室','discuss',714,318,42,60),
+    room('520A','520-A 讨论室','discuss',660,252,50,40),
+    room('520B','520-B 讨论室','discuss',660,300,50,40),
+    room('523','523 讨论室','discuss',662,402,58,58),
+    room('tea','茶水室','service',240,440,56,54)
+  ],
+  corridors: [[[220,160],[840,160],[840,480],[220,480],[220,160]]],
+  stairs: [
+    { id:'nw', label:'楼梯', x:220, y:160 },
+    { id:'ne', label:'电梯', x:840, y:160, kind:'lift' },
+    { id:'sw', label:'楼梯', x:220, y:480 },
+    { id:'se', label:'电梯', x:840, y:480, kind:'lift' }
+  ],
+  atrium: { x:240, y:180, w:580, h:280, label:'中庭上空' }
+};
+
+const ZX_6 = {
+  level: 6, H: 640,
+  rooms: [
+    ...row(70, 72, [
+      ['622','办公室','office'], ['623','办公室','office'], ['624','办公室','office'],
+      ['625','办公室','office'], ['626','办公室','office'], ['627','办公室','office'], ['628','办公室','office']
+    ], 240, 862),
+    ...col(860, 72, [
+      ['631A1','631-A 办公室','office',1.1], ['631A2','631-A 办公室','office',1.1],
+      ['634','办公室','office'], ['635','办公室','office'], ['636','工具间','service',0.7]
+    ], 70, 502),
+    ...row(500, 72, [
+      ['610','办公室','office'], ['609','办公室','office'], ['608','办公室','office'],
+      ['607','讨论室','discuss',0.9], ['606','办公室','office'], ['605','办公室','office'],
+      ['604','讨论室','discuss',0.9], ['603','办公室','office'], ['602','办公室','office'], ['601','办公室','office']
+    ], 70, 932),
+    room('lib','值班 / 会议区','hall',70,140,130,360,{vertical:true}),
+    room('621','621 值班室','office',70,140,130,36),
+    room('620','620 值班室','office',70,180,130,36),
+    room('619','619 值班室','office',70,220,130,36),
+    room('618','618 值班室','office',70,260,130,36),
+    room('616','616 会议室','meeting',70,300,130,40),
+    room('615','615 会议室','meeting',70,344,130,40),
+    room('614','614 值班室','office',70,388,130,36),
+    room('613','613 值班室','office',70,428,130,36),
+    room('612','612 值班室','office',70,468,130,36),
+    room('611','611 值班室','office',70,508,130,36),
+    room('629','629 讨论室','discuss',245,180,58,52),
+    room('617','617 办公室','office',245,250,90,80),
+    room('631C','631-C 办公室','office',742,252,70,86),
+    room('633','633 办公室','office',742,360,70,86),
+    room('630A','630-A 休息室','rest',600,180,52,52),
+    room('630B','630-B 休息室','rest',656,180,52,52),
+    room('tea','茶水间','service',240,430,56,54)
+  ],
+  corridors: [[[220,160],[840,160],[840,480],[220,480],[220,160]]],
+  stairs: [
+    { id:'nw', label:'楼梯', x:220, y:160 },
+    { id:'ne', label:'电梯', x:840, y:160, kind:'lift' },
+    { id:'sw', label:'楼梯', x:220, y:480 },
+    { id:'se', label:'电梯', x:840, y:480, kind:'lift' }
+  ],
+  atrium: { x:240, y:180, w:580, h:280, label:'中庭上空' }
+};
+
+/* 6F 的西侧房间压缩到 70..572，避免与南侧行重叠 */
+ZX_6.rooms = ZX_6.rooms.filter(r => !(r.x === 70 && r.y >= 140));
+{
+  const west = [
+    ['621','621 值班室','office'], ['620','620 值班室','office'], ['619','619 值班室','office'],
+    ['618','618 值班室','office'], ['616','616 会议室','meeting'], ['615','615 会议室','meeting'],
+    ['614','614 值班室','office'], ['613','613 值班室','office'], ['612','612 值班室','office'],
+    ['611','611 值班室','office']
+  ];
+  ZX_6.rooms.push(...col(70, 130, west, 140, 500, 3));
+}
+
+const ZX_2 = {
+  level: 2, H: 600,
+  rooms: [
+    ...row(60, 78, [
+      ['202','办公室','office'], ['203','办公室','office'], ['wc','洗手间','wc',0.6],
+      ['204','教室','class'], ['205','教室','class'], ['206','教室','class']
+    ], 140, 862),
+    room('lib','图书馆','library',140,148,130,260,{vertical:true}),
+    room('207','讨论间','discuss',660,160,100,66),
+    room('208','讨论间','discuss',660,230,100,66),
+    room('cafe','咖啡简餐','service',660,300,100,52),
+    room('209','讨论间','discuss',660,356,100,52),
+    room('xsg','校史馆','hall',150,420,150,124),
+    room('201','办公室','office',312,424,84,66),
+    room('210','办公室','office',406,424,84,66)
+  ],
+  corridors: [
+    [[280,148],[660,148],[660,420],[280,420],[280,148]],
+    [[280,300],[130,300]],
+    [[660,300],[880,300]],
+    [[420,420],[420,452]]
+  ],
+  stairs: [
+    { id:'sw', label:'大阶梯', x:130, y:300 },
+    { id:'se', label:'大阶梯', x:880, y:300 },
+    { id:'nw', label:'楼梯', x:280, y:148 },
+    { id:'ne', label:'楼梯', x:660, y:148 }
+  ],
+  atrium: { x:300, y:168, w:340, h:234, label:'中庭上空' },
+  entrances: [
+    { x:500, y:60, label:'北门', main:false },
+    { x:500, y:544, label:'南门', main:true },
+    { x:930, y:300, label:'连廊口', main:false }
+  ]
+};
+
+/* ---------- 正心楼 1F：两大分区 ---------- */
+const ZX_1 = {
+  level: 1, H: 870,
+  rooms: [],
+  corridors: [
+    [[500,790],[500,100]],
+    [[70,129],[930,129]],
+    [[70,209],[930,209]],
+    [[70,289],[930,289]],
+    [[70,369],[930,369]],
+    [[70,449],[930,449]],
+    [[70,529],[930,529]],
+    [[70,609],[930,609]],
+    [[70,689],[930,689]],
+    [[70,769],[930,769]]
+  ],
+  stairs: [
+    { id:'nw', label:'楼梯', x:470, y:129 },
+    { id:'ne', label:'楼梯', x:560, y:129 },
+    { id:'sw', label:'大阶梯', x:105, y:369 },
+    { id:'se', label:'大阶梯', x:905, y:369 }
+  ],
+  entrances: [
+    { x:500, y:790, label:'南门', main:true },
+    { x:500, y:60,  label:'北门', main:false }
+  ]
+};
+{
+  const R = ZX_1.rooms;
+  // 西侧
+  R.push(...row(60, 58, [['130','教室','class'],['131','教室','class'],['132','休息室','rest'],['wc1','洗手间','wc',0.8]], 70, 440));
+  R.push(...row(140,58, [['129','外送暂存','service'],['127','讨论间','discuss'],['126','讨论间','discuss'],['128','图书管理','service']], 70, 440));
+  R.push(room('miji','密集书库','library',70,220,178,58));
+  R.push(room('124','124 会议室','meeting',253,220,187,58));
+  R.push(room('djt','大阶梯','hall',70,300,78,122,{vertical:true}));
+  R.push(room('118','118 决策指挥中心','office',155,300,142,58));
+  R.push(room('kz','控制室','service',303,300,137,28));
+  R.push(room('123','123 会议室','meeting',303,332,137,90));
+  R.push(room('117','117 装备储藏','service',155,382,142,58));
+  R.push(...row(460,58, [['121','机房','service'],['120','机房','service'],['119','机房','service'],['xf','消防监控','service'],['115','矛盾纠纷处置','office']], 70, 440));
+  R.push(...row(540,58, [['116','监控查看','service'],['114','消防器材','service'],['113','体能训练','service'],['112','校卫队会议','meeting'],['111','安全保卫部','office']], 70, 440));
+  R.push(...row(620,58, [['107','教室','class'],['106','教室','class'],['105','财务报销大厅','hall'],['110','指挥中心','office'],['109','安全保卫部','office']], 70, 440));
+  R.push(...row(700,58, [['104','办公室','office'],['103','办公室','office'],['102','办公室','office'],['101','办公室','office'],['108','安全保卫部','office']], 70, 440));
+  // 东侧
+  R.push(...row(60,58, [['133','教室','class'],['136','教室','class'],['134','讨论间','discuss'],['135','讨论间','discuss']], 560, 930));
+  R.push(...row(140,58, [['137','教室','class'],['138','教室','class'],['141','档案室','service',1.2]], 560, 930));
+  R.push(...row(220,58, [['140','讨论间','discuss'],['142','讨论间','discuss'],['143','讨论间','discuss'],['144','讨论间','discuss']], 560, 930));
+  R.push(...row(300,58, [['145','讨论间','discuss'],['146','讨论间','discuss'],['147','讨论间','discuss'],['148','财务档案','service',1.3]], 560, 930));
+  R.push(...row(380,58, [['150','讨论间','discuss'],['151','档案接待','hall',1.3],['149','保密室','service'],['152','档案办公','office',1.2]], 560, 930));
+  R.push(room('139','139 讨论室','discuss',560,460,96,58));
+  R.push(room('153','153 教室','class',662,460,196,58));
+  R.push(room('lift','电梯厅','hall',864,460,66,58));
+  R.push(room('lobby','入口大厅','hall',440,726,120,62));
+  R.push(room('rest','休息区','hall',560,620,200,58));
+}
+
+const ZX_FLOORS = [ZX_1, ZX_2, ZX_3, ZX_4, ZX_5, ZX_6];
+
+/* ============================================================
+   精诚楼（原南科研楼） —— 8 层
+   ============================================================ */
+function jcUpper(level){
+  const p = String(level);
+  const n = (k) => p + String(k).padStart(2,'0');
+  if (level === 3){
+    return {
+      north: [
+        [n(27),'实验室','lab',1.2], [n(29),'工作室','study'], [n(31),'工作室','study'],
+        [n(33),'工作室','study'], [n(35),'工作室','study'], ['wc','洗手间','wc',0.6],
+        [n(37),'工作室','study'], [n(39),'工作室','study'], [n(41),'工作室','study'],
+        ['share','共享空间','hall',1.1]
+      ],
+      row2: [
+        [n(14),'办公室','office'], [n(16),'办公室','office'], [n(18),'办公室','office'], [n(20),'办公室','office'],
+        [n(22),'办公室','office'], [n(24),'办公室','office'], [n(26),'办公室','office'], [n(28),'办公室','office'],
+        [n(30),'办公室','office'],
+        [n(32),'办公室','office'], [n(34),'办公室','office'], [n(36),'办公室','office'], [n(38),'办公室','office'],
+        [n(40),'办公室','office'], [n(42),'办公室','office'], [n(44),'办公室','office'], [n(46),'办公室','office'],
+        [n(43),'会议室','meeting']
+      ],
+      east: [
+        [n(48),'工作室','study'], [n(45),'实验室','lab'], [n(47),'工作室','study'], [n(49),'工作室','study'],
+        [n(51),'工作室','study'], [n(53),'工作室','study'], [n(55),'工作室','study'], [n(57),'工作室','study']
+      ],
+      innerSouth: [
+        [n(12),'工作室','study'], [n(10),'工作室','study'], [n(8),'工作室','study'],
+        [n(6),'工作室','study'], [n(4),'工作室','study'], [n(2),'工作室','study']
+      ],
+      bottom: [
+        [n(25),'办公室','office'], [n(23),'办公室','office'], [n(21),'办公室','office'],
+        [n(19),'办公室','office'], [n(17),'办公室','office'], [n(15),'办公室','office'],
+        [n(13),'实验室','lab'], [n(11),'实验室','lab'],
+        [n(9),'办公室','office'], [n(7),'办公室','office'], [n(5),'办公室','office'], [n(3),'办公室','office'],
+        [n(1),'工作室','study']
+      ]
     };
+  }
+  if (level === 4){
+    return {
+      north: [
+        [n(21),'工作室','study'], [n(23),'工作室','study'], [n(25),'工作室','study'], [n(27),'工作室','study'],
+        [n(29),'工作室','study'], [n(31),'工作室','study'], [n(33),'库房','service',0.8],
+        [n(35),'工作室','study'], [n(37),'工作室','study']
+      ],
+      row2: [
+        [n(14),'实验室','lab'], [n(16),'办公室','office'], [n(18),'办公室','office'], [n(20),'办公室','office'],
+        [n(22),'办公室','office'], [n(24),'办公室','office'], [n(26),'办公室','office'], [n(28),'办公室','office'],
+        [n(30),'实验室','lab'], [n(32),'办公室','office'], [n(34),'办公室','office'], [n(36),'办公室','office'],
+        [n(38),'工作室','study'], [n(40),'办公室','office'], [n(42),'会议室','meeting']
+      ],
+      east: [],
+      innerSouth: [
+        [n(12),'工作室','study'], [n(10),'工作室','study'], [n(8),'工作室','study'],
+        [n(6),'工作室','study'], [n(4),'工作室','study'], [n(2),'工作室','study']
+      ],
+      bottom: [
+        [n(1),'会议室','meeting'], [n(3),'工作室','study'], [n(5),'工作室','study'],
+        [n(7),'工作室','study'], [n(9),'实验室','lab'], [n(11),'办公室','office'],
+        [n(13),'办公室','office'], [n(15),'库房','service',0.8], [n(17),'办公室','office'],
+        [n(19),'会议室','meeting']
+      ]
+    };
+  }
+  // 5-8 层同一格局
+  return {
+    north: [
+      [n(12),'工作室','study'], [n(10),'工作室','study'], [n(8),'工作室','study'],
+      [n(6),'工作室','study'], [n(4),'工作室','study'], [n(2),'工作室','study']
+    ],
+    row2: [
+      [n(23),'会议室','meeting'], [n(21),'办公室','office'], [n(19),'库房','service',0.8],
+      [n(17),'办公室','office'], [n(15),'办公室','office'], [n(13),'办公室','office'],
+      [n(11),'办公室','office'], [n(9),'办公室','office']
+    ],
+    east: [
+      [n(1),'会议室','meeting'], [n(3),'实验室','lab'], [n(5),'工作室','study'], [n(7),'工作室','study']
+    ],
+    innerSouth: [],
+    bottom: []
+  };
+}
 
-    var input  = document.getElementById('roomInput');
-    var goBtn  = document.getElementById('goBtn');
-    var errMsg = document.getElementById('errMsg');
+function jcFloor(level){
+  const H = 800;
+  const base = {
+    level, H,
+    rooms: [],
+    corridors: [
+      [[270,250],[850,250],[850,640],[270,640],[270,250]],
+      [[500,250],[500,90]],
+      [[500,640],[500,740]],
+      [[270,450],[160,450]]
+    ],
+    stairs: [
+      { id:'nw', label:'楼梯', x:270, y:250 },
+      { id:'ne', label:'电梯', x:850, y:250, kind:'lift' },
+      { id:'sw', label:'楼梯', x:270, y:640 },
+      { id:'se', label:'电梯', x:850, y:640, kind:'lift' }
+    ],
+    atrium: { x:290, y:268, w:530, h:352, label:'中庭 / 共享空间' },
+    wing: { x:160, y:300, w:100, h:340 }
+  };
 
-    // 快捷按钮
-    document.querySelectorAll('.quick-links button').forEach(function (b) {
-      b.addEventListener('click', function () {
-        input.value = b.getAttribute('data-fill');
-        input.focus();
+  if (level === 1){
+    base.rooms = [
+      ...row(60, 74, [
+        ['137','','hall',0.8], ['139','139 会议室','meeting',1.2], ['141','','hall',0.8],
+        ['143','143 研究生工作室','study',1.2], ['145','145 研究生工作室','study',1.2],
+        ['hall','大厅','hall',1.2], ['share','共享空间','hall',1.1]
+      ], 250, 930),
+      ...row(160, 74, [
+        ['112','112 工作室','study'], ['114','114 工作室','study'], ['116','','hall',0.6],
+        ['118','','hall',0.6], ['120','120 办公室','office'], ['122','122 办公室','office'],
+        ['124','124 办公室','office'], ['126','126 办公室','office'],
+        ['147','147 专用实验室','lab',1.4]
+      ], 250, 930),
+      ...col(860, 72, [
+        ['149','','service',0.8], ['151','151 值班室','office',0.9], ['153','153 实验室','lab',1.3],
+        ['155','155 管理室','office',0.9], ['157','','service',0.8]
+      ], 260, 640),
+      ...row(650, 70, [
+        ['225','225 办公室','office',1.2], ['115','','office',0.7], ['113','','office',0.7],
+        ['111','','office',0.7], ['109','','office',0.7], ['107','','office',0.7],
+        ['105','','service',0.7], ['103','103 交电所','service',0.9], ['101','101 工作室','study']
+      ], 250, 930),
+      ...row(560, 70, [
+        ['110','110 心理室','office',1.0], ['108','108 工作室','study',1.2], ['106','106 工作室','study',1.2],
+        ['104','104 工作室','study',1.2], ['102','102 实验室','lab',1.4], ['water','开水房','service',0.8]
+      ], 460, 850)
+    ];
+    const wing = ['135','133','131','129','127','125','123','119','121'];
+    base.rooms.push(...col(70, 76, wing.map((v,i)=>[v, i===0?'':'', 'hall']), 300, 640, 3));
+    base.wing = { x:62, y:292, w:88, h:356 };
+  } else if (level === 2){
+    base.rooms = [
+      ...row(60, 74, [
+        ['239','','hall',0.9], ['241','241 工作室','study',1.1], ['243','243 工作室','study',1.1],
+        ['245','245 会议室','meeting',1.2], ['hall','大厅','hall',1.1], ['share','共享空间','hall',1.1]
+      ], 250, 930),
+      ...row(160, 74, [
+        ['210','210 教室','class'], ['212','212 教室','class'], ['214','214 教室','class'],
+        ['216','216 办公室','office'], ['218','218 办公室','office'],
+        ['247','247 工作室','study'], ['251','251 工作室','study'], ['253','253 工作室','study']
+      ], 250, 930),
+      ...col(860, 72, [
+        ['255','255 工作室','study',1.1], ['255A','255-A','service',0.7],
+        ['257','257 办公室','office'], ['259','','service',0.8]
+      ], 260, 560),
+      ...row(560, 70, [
+        ['208','208 工作室','study'], ['206','206 工作室','study'],
+        ['204','204 实验室','lab',1.2], ['202','202 实验室','lab',1.2]
+      ], 460, 850),
+      ...row(660, 70, [
+        ['227','','office',0.7], ['225','','office',0.7], ['223','','office',0.7], ['221','','office',0.7],
+        ['219','','office',0.7], ['217','','office',0.7], ['215','','office',0.7], ['213','','office',0.7],
+        ['211','','office',0.7], ['209','','office',0.7], ['207','','office',0.7],
+        ['205','205 工作室','study',1.1], ['203','203 工作室','study',1.1], ['201','201 会议室','meeting',1.2]
+      ], 250, 930)
+    ];
+    const wing = ['235','233','231','229'];
+    const wr = col(160, 100, wing.map(v=>[v, v+' 教室','class']), 300, 640, 4);
+    base.rooms.push(...wr);
+  } else {
+    const d = jcUpper(level);
+    // 3F 以上房间多，改为加高的双层排布，避免一行挤满
+    base.H = 900;
+    base.corridors = [
+      [[270,340],[850,340],[850,720],[270,720],[270,340]],
+      [[500,340],[500,90]],
+      [[500,720],[500,800]],
+      [[270,540],[160,540]]
+    ];
+    base.stairs = [
+      { id:'nw', label:'楼梯', x:270, y:340 },
+      { id:'ne', label:'电梯', x:850, y:340, kind:'lift' },
+      { id:'sw', label:'楼梯', x:270, y:720 },
+      { id:'se', label:'电梯', x:850, y:720, kind:'lift' }
+    ];
+    base.atrium = { x:300, y:358, w:520, h:330, label:'中庭 / 共享空间' };
+    base.wing = { x:160, y:390, w:100, h:300 };
+
+    const half = Math.ceil(d.row2.length / 2);
+    base.rooms = [
+      ...row(60, 76, d.north, 250, 930),
+      ...row(160, 76, d.row2.slice(0, half), 250, 930),
+      ...row(246, 76, d.row2.slice(half), 250, 930),
+      ...col(860, 72, d.east, 360, 700),
+      ...row(610, 70, d.innerSouth, 400, 845),
+      ...row(740, 76, d.bottom, 250, 930),
+      room('water','开水间','service',700,470,60,50)
+    ];
+    if (level >= 5 && level <= 8){
+      base.rooms.push(room('tea','茶水间','service',610,470,60,50));
+    }
+    // 露台
+    base.rooms.push(room('terrace','露台','hall',170,752,64,64,{vertical:true}));
+  }
+  if (level === 2){
+    base.entrances = [{ x:160, y:450, label:'西门', main:true }];
+    base.link = { x:500, y:60, label:'连廊通正心楼' };
+  } else if (level === 1){
+    base.entrances = [{ x:160, y:450, label:'西门', main:true }];
+  }
+  return base;
+}
+
+const JC_FLOORS = [1,2,3,4,5,6,7,8].map(jcFloor);
+
+/* ============================================================
+   芯越楼（原国防楼） —— 3 层
+   ============================================================ */
+function XY(level){
+  const H = 760;
+  const base = {
+    level, H, rooms: [],
+    corridors: [
+      [[300,150],[840,150],[840,560],[250,560],[250,250]],
+      [[250,250],[160,250]],
+      [[500,560],[500,640]]
+    ],
+    stairs: [
+      { id:'nw', label:'楼梯', x:290, y:150 },
+      { id:'ne', label:'电梯', x:850, y:150, kind:'lift' },
+      { id:'sw', label:'楼梯', x:290, y:560 },
+      { id:'se', label:'楼梯', x:850, y:560 }
+    ],
+    courtyard: { x:300, y:250, w:520, h:290, label:'内院' },
+    entrances: [{ x:130, y:500, label:'西门', main:true }, { x:500, y:700, label:'南门' }]
+  };
+  if (level === 1){
+    base.rooms = [
+      ...row(60, 76, [
+        ['117','117 实验室','lab',1.2], ['119','119 实验室','lab',1.2], ['121','121 实验室','lab',1.2],
+        ['wc','洗手间','wc',0.7], ['123','123 实验室','lab',1.2]
+      ], 260, 880),
+      ...row(160, 76, [
+        ['106','106 实验室','lab',1.2], ['108','108 实验室','lab',1.2],
+        ['110','110 实验室','lab',1.4], ['112','112 实验室','lab',1.4]
+      ], 330, 880),
+      ...col(130, 110, [
+        ['115','115 教室','class',1.6], ['113','113 门卫','office',0.7], ['111','111 教室','class',1.8]
+      ], 260, 620),
+      ...row(600, 80, [
+        ['107','','service',0.9], ['105','105 企业展厅','hall',1.5], ['104','104 教室','class',1.0],
+        ['102','102 会议室','meeting',1.2], ['103','103 教室','class',1.2], ['101','101 教室','class',1.4]
+      ], 140, 880, 6)
+    ];
+  } else if (level === 2){
+    base.rooms = [
+      ...row(60, 76, [
+        ['219','219 教室','class',1.3], ['221','221 教具间','service',0.9], ['223','223 教室','class',1.4],
+        ['wc','洗手间','wc',0.7], ['225','225 办公室','office',1.0]
+      ], 240, 880),
+      ...row(160, 76, [
+        ['214','214 办公室','office',0.8], ['216','216 教室','class'], ['218','218 教室','class'],
+        ['220','220 教室','class'], ['222','222 教室','class']
+      ], 300, 880),
+      ...col(130, 110, [
+        ['215','215 教室','class',1.5], ['213','213 教室','class',1.5],
+        ['211','211 办公室','office',0.75], ['209','209 教室','class',1.5], ['212','212 办公室','office',0.75]
+      ], 250, 640),
+      ...row(600, 80, [
+        ['210','210 教室','class'], ['208','208 教室','class'], ['206','206 会议室','meeting'],
+        ['204','204 休息室','rest'], ['202','202 会议室','meeting'],
+        ['203','203 教室','class',1.2], ['201','201 教室','class',1.6]
+      ], 250, 880, 6),
+      room('terrace','阳台','hall',890,470,40,110,{vertical:true}),
+      room('lib2','图文二楼','library',240,60,92,60,{vertical:true})
+    ];
+  } else {
+    base.rooms = [
+      ...row(60, 76, [
+        ['315','315 工具间','service',0.9], ['308','308 办公室','office',1.1],
+        ['313','313 教室','class',1.4], ['wc','洗手间','wc',0.7], ['311','311 教室','class',1.4]
+      ], 240, 880),
+      ...col(130, 110, [
+        ['309','309 办公室','office',1.2], ['307','307 教室','class',1.6], ['306','306 办公室','office',1.2]
+      ], 250, 560),
+      ...row(600, 80, [
+        ['304','304 办公室','office',1.2], ['302','302 办公室','office',1.2], ['305','305 办公室','office',1.2],
+        ['303','303 办公室','office',1.2], ['301','301 办公室','office',1.4]
+      ], 250, 880, 6),
+      room('terrace','阳台','hall',890,470,40,110,{vertical:true})
+    ];
+  }
+  return base;
+}
+const XY_FLOORS = [1,2,3].map(XY);
+
+/* ============================================================
+   建筑注册
+   ============================================================ */
+const BUILDINGS = {
+  zhengxin: {
+    key:'zhengxin', name:'正心楼', alias:'', tag:'教学主楼',
+    color:'#2f7d6d', floors: ZX_FLOORS,
+    campusEntrance:[527,413], campusName:'正心楼南门',
+    desc:'六层教学与办公综合楼，中庭式环形走廊。'
+  },
+  jingcheng: {
+    key:'jingcheng', name:'精诚楼', alias:'南科研楼', tag:'科研楼',
+    color:'#3f80c0', floors: JC_FLOORS,
+    campusEntrance:[643,343], campusName:'精诚楼西门',
+    desc:'八层科研楼，原南科研楼，二层有连廊通往正心楼。'
+  },
+  xinyue: {
+    key:'xinyue', name:'芯越楼', alias:'国防楼', tag:'教学科研',
+    color:'#7b61a8', floors: XY_FLOORS,
+    campusEntrance:[761,537], campusName:'芯越楼西门',
+    desc:'三层教学科研楼，原国防楼，环绕内院布置。'
+  }
+};
+
+const START_POINTS = {
+  'gate-s': { name:'南门', pt:[500,660], short:'南门' },
+  'gate-n': { name:'北门', pt:[500,14],  short:'北门' },
+  'shaoxin':{ name:'绍信学生公寓', pt:[300,191], short:'绍信公寓' },
+  'shaoxian':{ name:'绍贤雅居', pt:[790,193], short:'绍贤雅居' },
+  'none':   { name:'仅显示楼内路线', pt:null, short:'楼内' }
+};
+
+/* ============================================================
+   状态
+   ============================================================ */
+const S = {
+  view:'campus',
+  building:'zhengxin',
+  floor:0,
+  selected:null,       // {bId, floor, roomId}
+  start:'gate-s',
+  route:null
+};
+
+/* ============================================================
+   校园地图绘制
+   ============================================================ */
+const ICONS = {
+  stair: (g,x,y,scale=1)=>{},
+};
+
+function drawCampus(){
+  svg.setAttribute('viewBox', `0 0 ${CAMPUS.W} ${CAMPUS.H}`);
+  svg.innerHTML = '';
+  const defs = E('defs', {}, svg);
+  const pat = E('pattern', { id:'hatch', width:10, height:10, patternUnits:'userSpaceOnUse', patternTransform:'rotate(45)' }, defs);
+  E('line', { x1:0,y1:0,x2:0,y2:10, stroke:'#d8e2dc', 'stroke-width':1.4 }, pat);
+  const sh = E('filter', { id:'soft', x:'-20%', y:'-20%', width:'140%', height:'140%' }, defs);
+  E('feDropShadow', { dx:0, dy:2, stdDeviation:3, 'flood-color':'#1b3b32', 'flood-opacity':0.13 }, sh);
+
+  // 背景
+  E('rect', { x:0,y:0,width:CAMPUS.W,height:CAMPUS.H, fill:'#eef3ee', rx:22 }, svg);
+
+  // 草坪 / 操场
+  const grounds = CAMPUS.buildings.filter(b => b.kind === 'ground');
+  grounds.forEach(g=>{
+    E('rect', { x:g.x, y:g.y, width:g.w, height:g.h, rx:26, fill:'#dcecd7', stroke:'#c3dabc', 'stroke-width':2 }, svg);
+    txt(svg, g.x+g.w/2, g.y+g.h/2, g.label, { size:18, weight:700, fill:'#3f6b3f' });
+  });
+
+  // 道路
+  CAMPUS.roads.forEach(d=>{
+    E('path', { d, fill:'none', stroke:'#dfe6e0', 'stroke-width':34, 'stroke-linecap':'round', 'stroke-linejoin':'round' }, svg);
+    E('path', { d, fill:'none', stroke:'#f7faf7', 'stroke-width':26, 'stroke-linecap':'round', 'stroke-linejoin':'round' }, svg);
+  });
+  // 中央大道文字
+  const roadLbl = E('text', { x:0, y:0, 'font-size':11.5, fill:'#a9b6b0', 'letter-spacing':4, 'text-anchor':'middle', class:'lbl' }, svg);
+  roadLbl.textContent = '中央大道';
+  roadLbl.setAttribute('transform','translate(500,150) rotate(90)');
+
+  // 建筑
+  CAMPUS.buildings.filter(b=>b.kind!=='ground').forEach(b=>{
+    const g = E('g', { class:'bldg', 'data-key':b.key }, svg);
+    const isReal = !!BUILDINGS[b.key];
+    const fill = isReal ? (BUILDINGS[b.key].color + '14') : '#ffffff';
+    const stroke = isReal ? BUILDINGS[b.key].color : '#233531';
+    const r = E('rect', {
+      class:'bshape', x:b.x, y:b.y, width:b.w, height:b.h, rx:18,
+      fill, stroke, 'stroke-width':3, filter:'url(#soft)'
+    }, g);
+    if (b.small){
+      const lines = b.label.match(/.{1,4}/g) || [b.label];
+      lines.forEach((ln,i)=>txt(g, b.x+b.w/2, b.y+b.h/2 + (i-(lines.length-1)/2)*16, ln, { size:11.5, weight:600 }));
+    } else {
+      txt(g, b.x+b.w/2, b.y+b.h/2 - (b.alias?4:0), b.label, { size:16, weight:700 });
+      if (b.alias) txt(g, b.x+b.w/2, b.y+b.h/2+16, '原'+b.alias, { size:10.5, fill:'#7a8b86', weight:500 });
+    }
+    // 入口点
+    if (b.entrance && isReal){
+      const ex = b.entrance[0], ey = b.entrance[1];
+      const cx = b.x + b.w/2, cy = b.y + b.h/2;
+      E('circle', { cx:ex, cy:ey, r:6, fill:'#fff', stroke:'#e2453c', 'stroke-width':2.5 }, g);
+      E('circle', { cx:ex, cy:ey, r:2, fill:'#e2453c' }, g);
+      let lx = ex, ly = ey + 16, anchor = 'middle';
+      if (Math.abs(ey - cy) < b.h*0.3 && Math.abs(ex - cx) > b.w*0.3){
+        lx = ex + (ex < cx ? -9 : 9); ly = ey + 4; anchor = ex < cx ? 'end' : 'start';
+      } else if (ey < cy){
+        ly = ey - 9;
+      }
+      txt(g, lx, ly, '1F 入口', { anchor, size:9.5, weight:700, fill:'#c3362d' });
+    }
+    const ttl = E('title', {}, g);
+    ttl.textContent = b.alias ? `${b.name}（原${b.alias}）` : b.name;
+    g.addEventListener('click', ()=>{
+      if (isReal){ openBuilding(b.key); }
+      else { S.selected = null; S.route = null; render(); toast(`${b.name} 暂无楼层平面图`); }
+    });
+  });
+
+  // 连廊
+  E('line', { x1:593, y1:330, x2:643, y2:330, stroke:'#9fb4ac', 'stroke-width':5, 'stroke-dasharray':'8 6', 'stroke-linecap':'round' }, svg);
+  txt(svg, 618, 318, '连廊', { size:10, fill:'#7d8f88' });
+
+  // 指北针
+  const cg = E('g', { transform:'translate(952,644)' }, svg);
+  E('path', { d:'M0,-18 L8,10 L0,4.5 L-8,10 Z', fill:'#233531' }, cg);
+  txt(cg, 0, 23, '北', { size:11, weight:700 });
+
+  // 路线
+  if (S.route && S.route.campus){
+    E('path', {
+      class:'route',
+      d: ptsToPath(S.route.campus.points)
+    }, svg);
+    const a = S.route.campus.points[0], z = S.route.campus.points[S.route.campus.points.length-1];
+    E('circle', { cx:a[0], cy:a[1], r:7, fill:'#e2453c', stroke:'#fff', 'stroke-width':3 }, svg);
+    E('circle', { cx:z[0], cy:z[1], r:7, fill:'#fff', stroke:'#e2453c', 'stroke-width':3 }, svg);
+    E('circle', { class:'pin', cx:z[0], cy:z[1], r:6, fill:'#e2453c', opacity:.55 }, svg);
+  }
+
+  // 比例尺
+  E('line', { x1:36, y1:664, x2:136, y2:664, stroke:'#8aa09a', 'stroke-width':3 }, svg);
+  E('line', { x1:36, y1:658, x2:36, y2:670, stroke:'#8aa09a', 'stroke-width':3 }, svg);
+  E('line', { x1:136, y1:658, x2:136, y2:670, stroke:'#8aa09a', 'stroke-width':3 }, svg);
+  txt(svg, 86, 678, '约 40 m', { size:10, fill:'#8aa09a' });
+}
+function ptsToPath(pts){
+  return pts.map((p,i)=> (i? 'L':'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+}
+
+/* ============================================================
+   楼层绘制
+   ============================================================ */
+function drawFloor(){
+  const b = BUILDINGS[S.building];
+  const f = b.floors[S.floor];
+  const H = f.H || 700;
+  svg.setAttribute('viewBox', `0 0 1000 ${H}`);
+  svg.innerHTML = '';
+
+  const defs = E('defs', {}, svg);
+  const pat = E('pattern', { id:'ath', width:12, height:12, patternUnits:'userSpaceOnUse', patternTransform:'rotate(45)' }, defs);
+  E('line', { x1:0,y1:0,x2:0,y2:12, stroke:'#dfe6ea', 'stroke-width':1.2 }, pat);
+
+  E('rect', { x:0, y:0, width:1000, height:H, fill:'#ffffff' }, svg);
+
+  // 建筑外轮廓
+  E('rect', { x:52, y:44, width:896, height:H-88, rx:12, fill:'#fbfcfb', stroke:'#1f2d2b', 'stroke-width':3.5 }, svg);
+
+  // 中庭
+  if (f.atrium){
+    E('rect', {
+      x:f.atrium.x, y:f.atrium.y, width:f.atrium.w, height:f.atrium.h,
+      rx:6, fill:'url(#ath)', stroke:'#d3dbe0', 'stroke-width':1.5
+    }, svg);
+    if (f.atrium.label){
+      txt(svg, f.atrium.x+f.atrium.w/2, f.atrium.y+f.atrium.h/2, f.atrium.label, { size:15, fill:'#9aa6ae', weight:600 });
+    }
+  }
+  if (f.courtyard){
+    E('rect', { x:f.courtyard.x, y:f.courtyard.y, width:f.courtyard.w, height:f.courtyard.h, rx:6,
+      fill:'#eef5ea', stroke:'#d6e3d1', 'stroke-width':1.5 }, svg);
+    txt(svg, f.courtyard.x+f.courtyard.w/2, f.courtyard.y+f.courtyard.h/2, f.courtyard.label, { size:14, fill:'#a3b3a6' });
+  }
+  if (f.wing){
+    E('rect', { x:f.wing.x, y:f.wing.y, width:f.wing.w, height:f.wing.h, rx:4,
+      fill:'#f7f9f7', stroke:'#dbe3dd', 'stroke-width':1.5, 'stroke-dasharray':'5 4' }, svg);
+  }
+
+  // 走廊（先画在底层）
+  f.corridors.forEach((pl, idx)=>{
+    const d = ptsToPath(pl);
+    E('path', { d, fill:'none', stroke:'#eef2f0', 'stroke-width':30, 'stroke-linecap':'round', 'stroke-linejoin':'round' }, svg);
+    E('path', { d, fill:'none', stroke:'#e3eae6', 'stroke-width':1.2, 'stroke-dasharray':'4 6', 'stroke-linecap':'round' }, svg);
+  });
+
+  // 房间
+  const rg = E('g', {}, svg);
+  f.rooms.forEach(r=>{
+    const t = TYPES[r.type] || TYPES.service;
+    const sel = S.selected && S.selected.bId===S.building && S.selected.floor===S.floor && S.selected.roomId===r.id;
+    const rect = E('rect', {
+      class:'room' + (sel?' sel':''),
+      x:r.x, y:r.y, width:r.w, height:r.h, rx:4,
+      fill:t.f, stroke:t.s, 'stroke-width': sel?2.6:1.3
+    }, rg);
+    const ti = E('title', {}, rect);
+    ti.textContent = roomFullName(r);
+    rect.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      selectRoom(S.building, S.floor, r.id);
+    });
+
+    drawRoomLabel(rg, r, t, sel);
+  });
+
+  // 楼梯 / 电梯
+  const routeStairId = S.route && S.route.stair ? S.route.stair.id : null;
+  (f.stairs || []).forEach(s=>{
+    const g = E('g', {}, svg);
+    if (s.id === routeStairId){
+      E('circle', { cx:s.x, cy:s.y, r:20, fill:'#e2453c', opacity:.18 }, g);
+      E('circle', { cx:s.x, cy:s.y, r:20, fill:'none', stroke:'#e2453c', 'stroke-width':2, opacity:.65 }, g);
+      const tag = S.floor === 0 ? '由此上楼' : '到达此层';
+      txt(g, s.x, s.y - 26, tag, { anchor:'middle', size:10.5, weight:700, fill:'#c3362d' });
+    }
+    E('rect', { x:s.x-14, y:s.y-14, width:28, height:28, rx:7, fill:'#233531', stroke:'#fff', 'stroke-width':2 }, g);
+    if (s.kind === 'lift'){
+      E('text', { x:s.x, y:s.y+1, 'text-anchor':'middle', 'dominant-baseline':'middle', 'font-size':12, fill:'#fff', 'font-weight':700, class:'lbl' }, g).textContent = '电';
+    } else {
+      for (let i=0;i<3;i++){
+        E('line', { x1:s.x-7, y1:s.y-6+i*6, x2:s.x+7, y2:s.y-6+i*6, stroke:'#fff', 'stroke-width':1.6 }, g);
+      }
+    }
+    const ti = E('title', {}, g);
+    ti.textContent = s.label;
+  });
+
+  // 入口（仅一层标注）
+  (S.floor === 0 ? (f.entrances || []) : []).forEach(en=>{
+    const g = E('g', {}, svg);
+    E('circle', { cx:en.x, cy:en.y, r:11, fill:'#e2453c', opacity:.14 }, g);
+    E('circle', { cx:en.x, cy:en.y, r:6, fill:'#e2453c', stroke:'#fff', 'stroke-width':2.5 }, g);
+    let lx = en.x, ly = en.y + 24, anchor = 'middle';
+    if (en.x > 900){ lx = en.x - 16; anchor='end'; }
+    else if (en.x < 300){ lx = en.x - 10; ly = en.y + 4; anchor='end'; }
+    const t = E('text', { x:lx, y:ly, 'text-anchor':anchor, 'font-size':11.5, 'font-weight':700, fill:'#c3362d', class:'lbl' }, g);
+    t.textContent = '入口 · ' + en.label;
+  });
+
+  // 连廊标记
+  if (f.link){
+    const g = E('g', {}, svg);
+    E('rect', { x:f.link.x-54, y:f.link.y-13, width:108, height:26, rx:13, fill:'#fff', stroke:'#9fb4ac', 'stroke-width':1.5 }, g);
+    E('text', { x:f.link.x, y:f.link.y+1, 'text-anchor':'middle', 'dominant-baseline':'middle', 'font-size':11, fill:'#5d726b', class:'lbl' }, g).textContent = f.link.label;
+    E('path', { d:`M ${f.link.x} ${f.link.y+14} L ${f.link.x} ${f.link.y+34}`, stroke:'#9fb4ac', 'stroke-width':2.5, fill:'none' }, g);
+    E('path', { d:`M ${f.link.x-5} ${f.link.y+30} L ${f.link.x} ${f.link.y+36} L ${f.link.x+5} ${f.link.y+30}`, fill:'none', stroke:'#9fb4ac', 'stroke-width':2.5 }, g);
+  }
+
+  // 路线
+  if (S.route){
+    const leg = S.route.legs.find(l => l.floor === S.floor);
+    if (leg){
+      E('path', { class:'route', d: ptsToPath(leg.points) }, svg);
+      const end = leg.points[leg.points.length-1];
+      E('circle', { class:'pin', cx:end[0], cy:end[1], r:6, fill:'#e2453c', opacity:.6 }, svg);
+      E('circle', { cx:end[0], cy:end[1], r:5, fill:'#fff', stroke:'#e2453c', 'stroke-width':3 }, svg);
+    }
+  }
+
+  // 楼层标题 & 指北针
+  txt(svg, 60, 28, `${b.name} · ${f.level}F`, { anchor:'start', size:15, weight:700, fill:'#152523' });
+  txt(svg, 60, H-18, b.alias ? `原${b.alias} · 字母编号为房间号，示意非等比` : '示意非等比，以现场为准', { anchor:'start', size:10.5, fill:'#8b9a95' });
+  const cg = E('g', { transform:`translate(944,${H-42})` }, svg);
+  E('path', { d:'M0,-16 L7,9 L0,3.5 L-7,9 Z', fill:'#5d6b66' }, cg);
+  txt(cg, 0, 19, '北', { size:9.5, weight:700, fill:'#5d6b66' });
+}
+
+function roomFullName(r){
+  const id = r.id || '', lab = r.label || '';
+  if (!lab) return id;
+  if (!id || /^[a-zA-Z]/.test(id)) return lab;
+  if (lab.startsWith(id)) return lab;
+  if (/^\d+[A-Za-z-]/.test(id)) return lab;
+  return id + ' ' + lab;
+}
+
+function drawRoomLabel(g, r, t, sel){
+  const name = roomFullName(r);
+  if (!name) return;
+  // 中文按 1 字宽、英文数字按 0.55 字宽估算，避免标签溢出
+  const est = s => [...s].reduce((a,ch)=> a + (/[\x00-\xff]/.test(ch) ? 0.55 : 1), 0);
+  const vertical = r.vertical || (r.w < 56 && r.h > 52);
+  const cx = r.x + r.w/2, cy = r.y + r.h/2;
+
+  let lines;
+  if (r.id && r.label && r.label !== r.id && !/^[a-zA-Z]/.test(r.id) && r.w > 62 && r.h >= 46){
+    lines = [r.id, r.label];
+  } else {
+    lines = [name];
+  }
+
+  if (vertical){
+    const fs = Math.min(12, Math.max(7.6, (r.h - 8) / Math.max(2, est(name) * 1.02)));
+    const el = E('text', {
+      x:cx, y:cy, 'text-anchor':'middle', 'dominant-baseline':'middle',
+      'font-size':fs, 'font-weight':600, fill:t.t, class:'lbl',
+      transform:`rotate(-90 ${cx} ${cy})`
+    }, g);
+    el.textContent = name;
+    return;
+  }
+
+  const longest = Math.max(...lines.map(est));
+  let fs = Math.min(13.5, (r.w - 7) / Math.max(2.2, longest * 0.98), (r.h - 6) / (lines.length * 1.45 + 0.3));
+  fs = Math.max(7.4, fs);
+
+  if (fs < 8.2 && lines.length > 1){
+    lines = [r.id];
+    fs = Math.max(7.6, Math.min(11, (r.w-6)/ (est(r.id)*0.98)));
+  }
+
+  lines.forEach((ln, i)=>{
+    const y = cy + (i - (lines.length-1)/2) * (fs * 1.32);
+    const el = E('text', {
+      x:cx, y, 'text-anchor':'middle', 'dominant-baseline':'middle',
+      'font-size': i===0 && lines.length>1 ? fs*1.02 : fs,
+      'font-weight': i===0 ? 700 : 500,
+      fill: i===0 ? t.t : t.t, class:'lbl'
+    }, g);
+    el.textContent = ln;
+  });
+}
+
+/* ============================================================
+   图修
+   ============================================================ */
+function buildGraph(polys){
+  const nodes = [], adj = [], idx = new Map(), eset = new Set();
+  const keyOf = p => p[0].toFixed(1) + ',' + p[1].toFixed(1);
+  function add(p){
+    const k = keyOf(p);
+    if (idx.has(k)) return idx.get(k);
+    const i = nodes.length;
+    nodes.push([+p[0], +p[1]]); adj.push([]); idx.set(k, i);
+    return i;
+  }
+  function link(a, b){
+    if (a === b || a === null || b === null) return;
+    const ek = Math.min(a,b) + '-' + Math.max(a,b);
+    if (eset.has(ek)) return;
+    eset.add(ek);
+    const d = Math.hypot(nodes[a][0]-nodes[b][0], nodes[a][1]-nodes[b][1]);
+    adj[a].push([b, d]); adj[b].push([a, d]);
+  }
+  const segs = [];
+  polys.forEach(pl=>{
+    const ids = pl.map(add);
+    for (let i=0;i<ids.length-1;i++){ link(ids[i], ids[i+1]); segs.push([ids[i], ids[i+1]]); }
+  });
+
+  // 交叉的走廊自动打节点，保证连通
+  function cross(p1,p2,p3,p4){
+    const d = (p2[0]-p1[0])*(p4[1]-p3[1]) - (p2[1]-p1[1])*(p4[0]-p3[0]);
+    if (Math.abs(d) < 1e-9) return null;
+    const t = ((p3[0]-p1[0])*(p4[1]-p3[1]) - (p3[1]-p1[1])*(p4[0]-p3[0])) / d;
+    const u = ((p3[0]-p1[0])*(p2[1]-p1[1]) - (p3[1]-p1[1])*(p2[0]-p1[0])) / d;
+    if (t < -0.001 || t > 1.001 || u < -0.001 || u > 1.001) return null;
+    return [p1[0]+t*(p2[0]-p1[0]), p1[1]+t*(p2[1]-p1[1])];
+  }
+  for (let i=0;i<segs.length;i++){
+    for (let j=i+1;j<segs.length;j++){
+      const [a1,b1] = segs[i], [a2,b2] = segs[j];
+      if (a1===a2 || a1===b2 || b1===a2 || b1===b2) continue;
+      const q = cross(nodes[a1], nodes[b1], nodes[a2], nodes[b2]);
+      if (q){
+        const k = add(q);
+        link(k, a1); link(k, b1); link(k, a2); link(k, b2);
+      }
+    }
+  }
+
+  function attach(p){
+    let best = { d: Infinity, a:null, b:null, q:null };
+    const seen = new Set();
+    for (let a=0;a<adj.length;a++){
+      for (const [b] of adj[a]){
+        const kk = Math.min(a,b)+'-'+Math.max(a,b);
+        if (seen.has(kk)) continue;
+        seen.add(kk);
+        const A = nodes[a], B = nodes[b];
+        const vx = B[0]-A[0], vy = B[1]-A[1];
+        const L2 = vx*vx + vy*vy || 1;
+        let t = ((p[0]-A[0])*vx + (p[1]-A[1])*vy) / L2;
+        t = Math.max(0, Math.min(1, t));
+        const q = [A[0]+vx*t, A[1]+vy*t];
+        const d = Math.hypot(p[0]-q[0], p[1]-q[1]);
+        if (d < best.d) best = { d, a, b, q };
+      }
+    }
+    if (!best.q) return null;
+    const i = add(best.q);
+    link(i, best.a); link(i, best.b);
+    return i;
+  }
+  function dijkstra(a, b){
+    if (a === null || b === null) return null;
+    const n = nodes.length;
+    const dist = new Array(n).fill(Infinity);
+    const prev = new Array(n).fill(-1);
+    const done = new Array(n).fill(false);
+    dist[a] = 0;
+    for (let it=0; it<n; it++){
+      let u = -1, best = Infinity;
+      for (let i=0;i<n;i++) if (!done[i] && dist[i] < best){ best = dist[i]; u = i; }
+      if (u < 0) break;
+      if (u === b) break;
+      done[u] = true;
+      for (const [v,w] of adj[u]){
+        if (dist[u] + w < dist[v]){ dist[v] = dist[u] + w; prev[v] = u; }
+      }
+    }
+    if (dist[b] === Infinity) return null;
+    const pts = [];
+    let c = b;
+    while (c !== -1){ pts.push(nodes[c]); c = prev[c]; }
+    pts.reverse();
+    return { points: pts, dist: dist[b] };
+  }
+  return { nodes, adj, attach, dijkstra };
+}
+
+const graphCache = new Map();
+function getFloorGraph(bId, floorIdx){
+  const key = bId + ':' + floorIdx;
+  if (graphCache.has(key)) return graphCache.get(key);
+  const f = BUILDINGS[bId].floors[floorIdx];
+  const g = buildGraph(f.corridors);
+  (f.stairs || []).forEach(s => { if (s._n === undefined) s._n = g.attach([s.x, s.y]); });
+  (f.entrances || []).forEach(e => { if (e._n === undefined) e._n = g.attach([e.x, e.y]); });
+  graphCache.set(key, g);
+  return g;
+}
+
+const campusGraph = buildGraph([
+  [[500,660],[500,610],[500,537],[500,475],[500,413],[500,343],[500,250],[500,191],[500,14]],
+  [[500,610],[761,610],[761,537]],
+  [[500,343],[643,343]],
+  [[500,413],[527,413]],
+  [[500,413],[312,414]],
+  [[500,191],[300,191]],
+  [[500,191],[790,193]],
+  [[500,250],[130,250]]
+]);
+
+function campusRoute(startPt, endPt){
+  const g = campusGraph;
+  const a = g.attach(startPt), b = g.attach(endPt);
+  return g.dijkstra(a, b);
+}
+
+const centerOf = r => [r.x + r.w/2, r.y + r.h/2];
+const doorOf = (pts, r) => {
+  const p = pts[pts.length-1];
+  return [Math.max(r.x+2, Math.min(p[0], r.x+r.w-2)), Math.max(r.y+2, Math.min(p[1], r.y+r.h-2))];
+};
+const gapToRoom = (pts, r) => {
+  const d = doorOf(pts, r), p = pts[pts.length-1];
+  return Math.hypot(d[0]-p[0], d[1]-p[1]);
+};
+const intoRoom = (pts, r) => pts.concat([doorOf(pts, r)]);
+
+function planRoute(bId, floorIdx, roomId, startId){
+  const b = BUILDINGS[bId];
+  const f = b.floors[floorIdx];
+  const rm = f.rooms.find(r => r.id === roomId);
+  if (!rm) return null;
+  const start = START_POINTS[startId];
+
+  let campus = null;
+  if (start && start.pt){
+    const cr = campusRoute(start.pt, b.campusEntrance);
+    if (cr) campus = { points: cr.points, dist: cr.dist };
+  }
+
+  // 选择入口
+  const f1 = b.floors[0];
+  let entrance = (f1.entrances || []).find(e => e.main) || (f1.entrances || [])[0];
+  if (startId === 'gate-n') {
+    const north = (f1.entrances || []).find(e => /北/.test(e.label));
+    if (north) entrance = north;
+  }
+  if (!entrance) return null;
+
+  const legs = [];
+  let stair = null;
+
+  if (floorIdx === 0){
+    const g = getFloorGraph(bId, 0);
+    const p = g.dijkstra(g.attach([entrance.x, entrance.y]), g.attach(centerOf(rm)));
+    if (p) legs.push({ floor:0, points: intoRoom(p.points, rm), dist: p.dist + gapToRoom(p.points, rm) });
+  } else {
+    let best = null;
+    for (const s of f.stairs){
+      const s1 = (f1.stairs || []).find(x => x.id === s.id);
+      if (!s1) continue;
+      const g1 = getFloorGraph(bId, 0), g2 = getFloorGraph(bId, floorIdx);
+      const p1 = g1.dijkstra(g1.attach([entrance.x, entrance.y]), s1._n);
+      const p2 = g2.dijkstra(s._n, g2.attach(centerOf(rm)));
+      if (!p1 || !p2) continue;
+      const d = p1.dist + p2.dist + gapToRoom(p2.points, rm);
+      if (!best || d < best.d) best = { d, s, p1, p2 };
+    }
+    if (best){
+      legs.push({ floor:0, points:best.p1.points, dist:best.p1.dist });
+      legs.push({ floor:floorIdx, points: intoRoom(best.p2.points, rm), dist: best.p2.dist + gapToRoom(best.p2.points, rm) });
+      stair = best.s;
+    }
+  }
+
+  const campusMeters = campus ? campus.dist * 0.4 : 0;
+  const floorMeters = legs.reduce((a,l)=>a+l.dist, 0) * 0.075;
+  const total = campusMeters + floorMeters;
+  const minutes = Math.max(1, Math.round(total / 1.25 / 60 * 10) / 10);
+
+  return {
+    bId, floorIdx, roomId: rm.id,
+    campus, legs, stair,
+    entrance, start,
+    total, minutes,
+    room: rm
+  };
+}
+
+/* ============================================================
+   渲染主循环
+   ============================================================ */
+function render(){
+  if (S.view !== 'campus') S.building = S.view;
+  renderTabs();
+  renderFloorBar();
+  renderStart();
+  renderLegend();
+  if (S.view === 'campus'){
+    drawCampus();
+    $('#hint').textContent = '点击建筑进入楼层图 · 点击房间查看位置';
+  } else {
+    drawFloor();
+    const b = BUILDINGS[S.view];
+    $('#hint').textContent = `${b.name} ${b.floors[S.floor].level}F · 点击房间查看位置与路线`;
+  }
+  renderRoutePanel();
+}
+
+function renderTabs(){
+  const el = $('#tabs');
+  el.innerHTML = '';
+  const mk = (key, label, sub) => {
+    const btn = document.createElement('button');
+    btn.className = 'tab' + (S.view === key ? ' active' : '');
+    btn.innerHTML = `<span class="dot"></span>${label}${sub?`<em>${sub}</em>`:''}`;
+    btn.onclick = ()=>{
+      if (key === 'campus'){ S.view = 'campus'; }
+      else { S.view = key; if (S.selected && S.selected.bId !== key) S.selected = null; }
+      render();
+    };
+    el.appendChild(btn);
+  };
+  mk('campus', '校园总览', '');
+  mk('zhengxin', '正心楼', '6层');
+  mk('jingcheng', '精诚楼', '原南科研楼');
+  mk('xinyue', '芯越楼', '原国防楼');
+}
+
+function renderFloorBar(){
+  const el = $('#floorbar');
+  el.innerHTML = '';
+  if (S.view === 'campus') return;
+  const b = BUILDINGS[S.view];
+  const lbl = document.createElement('span');
+  lbl.className = 'lbl';
+  lbl.textContent = '楼层';
+  el.appendChild(lbl);
+  b.floors.forEach((f, i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'chip' + (S.floor === i ? ' active' : '');
+    btn.textContent = f.level + 'F';
+    btn.onclick = ()=>{ S.floor = i; render(); };
+    el.appendChild(btn);
+  });
+  const tip = document.createElement('span');
+  tip.className = 'lbl';
+  tip.style.marginLeft = '6px';
+  tip.textContent = b.desc;
+  el.appendChild(tip);
+}
+
+function renderStart(){
+  const el = $('#startrow');
+  el.innerHTML = '';
+  Object.entries(START_POINTS).forEach(([k,v])=>{
+    const btn = document.createElement('button');
+    btn.className = 'startbtn' + (S.start === k ? ' active' : '');
+    btn.textContent = v.name;
+    btn.onclick = ()=>{ S.start = k; recomputeRoute(); render(); };
+    el.appendChild(btn);
+  });
+}
+
+function renderLegend(){
+  const el = $('#legend');
+  if (el.dataset.done) return;
+  el.dataset.done = '1';
+  [['class','教室'],['lab','实验室'],['office','办公室'],['discuss','讨论室'],['meeting','会议室'],['study','研究生工作室'],['rest','休息室'],['wc','洗手间'],['service','机房/服务'],['library','图书馆']].forEach(([k,n])=>{
+    const t = TYPES[k];
+    const d = document.createElement('div');
+    d.className = 'lg';
+    d.innerHTML = `<span class="sw" style="background:${t.f};border-color:${t.s}"></span>${n}`;
+    el.appendChild(d);
+  });
+  const d = document.createElement('div');
+  d.className = 'lg';
+  d.innerHTML = `<span class="sw" style="background:#fdd;border-color:#e2453c;border-radius:50%"></span>楼栋入口`;
+  el.appendChild(d);
+}
+
+/* ============================================================
+   交互
+   ============================================================ */
+function openBuilding(key){
+  S.view = key;
+  S.floor = 0;
+  S.selected = null;
+  S.route = null;
+  render();
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+function selectRoom(bId, floorIdx, roomId){
+  S.selected = { bId, floor: floorIdx, roomId };
+  S.route = planRoute(bId, floorIdx, roomId, S.start);
+  renderRoutePanel();
+  // 只重绘当前视图
+  if (S.view === 'campus'){ drawCampus(); }
+  else { drawFloor(); }
+  // 高亮
+  const f = BUILDINGS[bId].floors[floorIdx];
+  const rm = f.rooms.find(r => r.id === roomId);
+  if (rm){
+    const sel = planRoute(bId, floorIdx, roomId, S.start);
+    S.route = sel;
+  }
+}
+
+function recomputeRoute(){
+  if (!S.selected) return;
+  S.route = planRoute(S.selected.bId, S.selected.floor, S.selected.roomId, S.start);
+}
+
+function renderRoutePanel(){
+  const el = $('#routebody');
+  if (!S.route){
+    el.innerHTML = `<div class="empty">还没有选择目的地。<br>试试搜索 <b>305</b>，或直接点击平面图上的房间。</div>`;
+    return;
+  }
+  const r = S.route;
+  const b = BUILDINGS[r.bId];
+  const f = b.floors[r.floorIdx];
+  const name = roomFullName(r.room);
+
+  const steps = [];
+  if (r.campus && r.start && r.start.pt){
+    const meters = Math.round(r.campus.dist * 0.4 / 5) * 5;
+    steps.push(`从 <b>${r.start.name}</b> 出发，沿校园道路步行约 ${meters} 米，到达 <b>${b.name}${r.entrance.label}</b>。`);
+  } else if (r.start && !r.start.pt){
+    steps.push(`从 <b>${b.name}${r.entrance.label}</b> 进入（仅显示楼内路线）。`);
+  } else {
+    steps.push(`从 <b>${b.name}${r.entrance.label}</b> 进入。`);
+  }
+
+  if (r.floorIdx === 0){
+    const leg0 = r.legs.find(l=>l.floor===0);
+    const m = Math.round((leg0?.dist || 0) * 0.075);
+    steps.push(`进入后沿一层走廊步行约 ${m} 米，到达 <b>${name}</b>。`);
+  } else {
+    const st = r.stair || { label:'楼梯' };
+    const leg0 = r.legs.find(l=>l.floor===0);
+    const m1 = Math.round((leg0?.dist || 0) * 0.075);
+    steps.push(`进入后沿一层走廊步行约 ${m1} 米，找到 <b>${st.label}</b>，${st.kind==='lift'?'乘电梯':'沿楼梯'}上至 <b>${f.level} 层</b>。`);
+    const m2 = Math.round((r.legs.find(l=>l.floor===r.floorIdx)?.dist || 0) * 0.075);
+    steps.push(`出${st.label}后沿走廊步行约 ${m2} 米，到达 <b>${name}</b>。`);
+  }
+
+  el.innerHTML = `
+    <div class="routeinfo">
+      <div class="target">${name}</div>
+      <div class="where">${b.name} · ${f.level}F ${b.alias?`（原${b.alias}）`:''}</div>
+      <ol class="steps">
+        ${steps.map((s,i)=>`<li><span class="n">${i+1}</span><div>${s}</div></li>`).join('')}
+      </ol>
+      <div class="sum">
+        <span>全程约 <b>${Math.round(r.total/5)*5} m</b></span>
+        <span>步行约 <b>${r.minutes}</b> 分钟</span>
+      </div>
+    </div>`;
+}
+
+function toast(msg){
+  const d = document.createElement('div');
+  d.textContent = msg;
+  d.style.cssText = 'position:fixed;left:50%;top:80px;transform:translateX(-50%);background:#152523;color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;z-index:99;opacity:0;transition:.2s';
+  document.body.appendChild(d);
+  requestAnimationFrame(()=>{ d.style.opacity='1'; });
+  setTimeout(()=>{ d.style.opacity='0'; setTimeout(()=>d.remove(), 250); }, 1800);
+}
+
+/* ============================================================
+   搜索
+   ============================================================ */
+const INDEX = [];
+Object.values(BUILDINGS).forEach(b=>{
+  b.floors.forEach((f, fi)=>{
+    f.rooms.forEach(r=>{
+      if (!r.id || /^[a-zA-Z]/.test(r.id) || r.type === 'hall' || r.type === 'atrium') return;
+      INDEX.push({
+        bId:b.key, floor:fi, roomId:r.id, r,
+        text: `${b.name} ${b.alias || ''} ${r.id} ${r.label}`,
+        label: roomFullName(r),
+        where: `${b.name} · ${f.level}F`
       });
     });
+  });
+});
 
-    function showError(msg) {
-      errMsg.textContent = msg;
-      errMsg.classList.add('show');
-    }
-    function clearError() {
-      errMsg.classList.remove('show');
-    }
+const qEl = $('#q'), resEl = $('#results');
+let activeResult = -1;
+function doSearch(q){
+  const s = q.trim();
+  if (!s){ resEl.classList.remove('show'); return; }
+  const norm = s.replace(/\s+/g,'').toLowerCase();
+  let hits = INDEX.filter(it => it.text.replace(/\s+/g,'').toLowerCase().includes(norm));
+  // 优先房间号完全匹配
+  hits.sort((a,b)=>{
+    const ea = a.roomId.toLowerCase() === norm ? 0 : (a.roomId.toLowerCase().startsWith(norm) ? 1 : 2);
+    const eb = b.roomId.toLowerCase() === norm ? 0 : (b.roomId.toLowerCase().startsWith(norm) ? 1 : 2);
+    return ea - eb;
+  });
+  hits = hits.slice(0, 8);
+  if (!hits.length){
+    resEl.innerHTML = `<div class="result"><span>没有找到“${s}”，试试 305 / 精诚楼201 / 国防楼111</span></div>`;
+    resEl.classList.add('show');
+    return;
+  }
+  resEl.innerHTML = hits.map((h,i)=>`
+    <div class="result" data-i="${i}">
+      <b>${h.roomId}</b><span>${h.r.label || ''}</span><span class="bld">${h.where}</span>
+    </div>`).join('');
+  resEl.classList.add('show');
+  activeResult = 0;
+  [...resEl.querySelectorAll('.result[data-i]')].forEach(el=>{
+    el.onclick = ()=>{
+      const h = hits[+el.dataset.i];
+      gotoHit(h);
+    };
+  });
+}
+function gotoHit(h){
+  S.view = h.bId; S.floor = h.floor;
+  S.selected = { bId:h.bId, floor:h.floor, roomId:h.roomId };
+  S.route = planRoute(h.bId, h.floor, h.roomId, S.start);
+  resEl.classList.remove('show');
+  qEl.blur();
+  render();
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+qEl.addEventListener('input', e=>doSearch(e.target.value));
+qEl.addEventListener('focus', e=>{ if (e.target.value.trim()) doSearch(e.target.value); });
+qEl.addEventListener('keydown', e=>{
+  const items = [...resEl.querySelectorAll('.result[data-i]')];
+  if (e.key === 'Escape'){ resEl.classList.remove('show'); return; }
+  if (!items.length) return;
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+    e.preventDefault();
+    activeResult = (activeResult + (e.key==='ArrowDown'?1:-1) + items.length) % items.length;
+    items.forEach((el,i)=>el.classList.toggle('active', i===activeResult));
+  }
+  if (e.key === 'Enter'){
+    e.preventDefault();
+    const el = items[Math.max(0, activeResult)];
+    if (el) el.click();
+  }
+});
+document.addEventListener('click', e=>{
+  if (!e.target.closest('.searchwrap')) resEl.classList.remove('show');
+});
 
-    function submit() {
-      clearError();
-      var raw = input.value.trim();
-      if (!raw) { showError('请先输入教室编号'); return; }
-
-      // 解析：楼名 + 房间号（3 位数字，第一位是楼层）
-      var match = raw.match(/^(.+?)(\d{3})$/);
-      if (!match) {
-        showError('格式不对，请输入「楼名+三位房间号」，例如正兴楼302');
-        return;
+/* ============================================================
+   启动
+   ============================================================ */
+(function initFromURL(){
+  try{
+    const p = new URLSearchParams(location.search);
+    const b = p.get('b');
+    const rm = p.get('room');
+    if (b && BUILDINGS[b]){
+      S.view = b;
+      const fi = parseInt(p.get('f') || '0', 10);
+      S.floor = Number.isFinite(fi) ? Math.min(Math.max(fi, 0), BUILDINGS[b].floors.length - 1) : 0;
+      if (rm){
+        const target = BUILDINGS[b].floors[S.floor].rooms.find(r => r.id === rm);
+        if (target){
+          S.selected = { bId:b, floor:S.floor, roomId:rm };
+          S.route = planRoute(b, S.floor, rm, S.start);
+        }
       }
-      var buildingName = match[1].trim();
-      var roomNo = match[2];
-
-      // 楼名必须存在
-      if (!CAMPUS[buildingName]) {
-        showError('没有找到「' + buildingName + '」。目前支持：' + Object.keys(CAMPUS).join('、'));
-        return;
+    } else if (rm){
+      const hit = INDEX.find(i => i.roomId.toLowerCase() === rm.toLowerCase());
+      if (hit){
+        S.view = hit.bId; S.floor = hit.floor;
+        S.selected = { bId:hit.bId, floor:hit.floor, roomId:hit.roomId };
+        S.route = planRoute(hit.bId, hit.floor, hit.roomId, S.start);
       }
-
-      var floor = parseInt(roomNo.charAt(0), 10);
-      if (floor < 1 || floor > CAMPUS[buildingName].maxFloor) {
-        showError(buildingName + ' 只有 ' + CAMPUS[buildingName].maxFloor + ' 层，没有第 ' + floor + ' 层');
-        return;
-      }
-
-      // 存起来，跳结果页
-      localStorage.setItem('targetRoom', JSON.stringify({
-        building: buildingName,
-        room: roomNo,
-        floor: floor
-      }));
-      location.href = 'findplace-result.html';
     }
+  }catch(e){ /* ignore */ }
+})();
 
-    goBtn.addEventListener('click', submit);
-    input.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') submit();
-    });
-    input.addEventListener('input', clearError);
-  </script>
+render();
+</script>
 </body>
 </html>
