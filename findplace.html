@@ -902,13 +902,13 @@ const BUILDINGS = {
     key:'jingcheng', name:'精诚楼', alias:'南科研楼', tag:'科研楼',
     color:'#3f80c0', floors: JC_FLOORS,
     campusEntrance:[643,343], campusName:'精诚楼西门',
-    desc:'八层科研楼，原南科研楼，二层有连廊通往正心楼。'
+    desc:'八层科研楼，二层有连廊通往正心楼。'
   },
   xinyue: {
     key:'xinyue', name:'芯越楼', alias:'国防楼', tag:'教学科研',
     color:'#7b61a8', floors: XY_FLOORS,
     campusEntrance:[761,537], campusName:'芯越楼西门',
-    desc:'三层教学科研楼，原国防楼，环绕内院布置。'
+    desc:'三层教学科研楼，环绕内院布置。'
   }
 };
 
@@ -983,7 +983,7 @@ function drawCampus(){
       lines.forEach((ln,i)=>txt(g, b.x+b.w/2, b.y+b.h/2 + (i-(lines.length-1)/2)*16, ln, { size:11.5, weight:600 }));
     } else {
       txt(g, b.x+b.w/2, b.y+b.h/2 - (b.alias?4:0), b.label, { size:16, weight:700 });
-      if (b.alias) txt(g, b.x+b.w/2, b.y+b.h/2+16, '原'+b.alias, { size:10.5, fill:'#7a8b86', weight:500 });
+      if (b.alias) txt(g, b.x+b.w/2, b.y+b.h/2+16, b.alias, { size:10.5, fill:'#7a8b86', weight:500 });
     }
     // 入口点
     if (b.entrance && isReal){
@@ -1000,7 +1000,7 @@ function drawCampus(){
       txt(g, lx, ly, '1F 入口', { anchor, size:9.5, weight:700, fill:'#c3362d' });
     }
     const ttl = E('title', {}, g);
-    ttl.textContent = b.alias ? `${b.name}（原${b.alias}）` : b.name;
+    ttl.textContent = b.alias ? `${b.name}（${b.alias}）` : b.name;
     g.addEventListener('click', ()=>{
       if (isReal){ openBuilding(b.key); }
       else { S.selected = null; S.route = null; render(); toast(`${b.name} 暂无楼层平面图`); }
@@ -1160,7 +1160,7 @@ function drawFloor(){
 
   // 楼层标题 & 指北针
   txt(svg, 60, 28, `${b.name} · ${f.level}F`, { anchor:'start', size:15, weight:700, fill:'#152523' });
-  txt(svg, 60, H-18, b.alias ? `原${b.alias} · 字母编号为房间号，示意非等比` : '示意非等比，以现场为准', { anchor:'start', size:10.5, fill:'#8b9a95' });
+  txt(svg, 60, H-18, b.alias ? `${b.alias} · 字母编号为房间号，示意非等比` : '示意非等比，以现场为准', { anchor:'start', size:10.5, fill:'#8b9a95' });
   const cg = E('g', { transform:`translate(944,${H-42})` }, svg);
   E('path', { d:'M0,-16 L7,9 L0,3.5 L-7,9 Z', fill:'#5d6b66' }, cg);
   txt(cg, 0, 19, '北', { size:9.5, weight:700, fill:'#5d6b66' });
@@ -1456,10 +1456,10 @@ function renderTabs(){
     };
     el.appendChild(btn);
   };
-  mk('campus', '校园总览', '');
-  mk('zhengxin', '正心楼', '6层');
-  mk('jingcheng', '精诚楼', '原南科研楼');
-  mk('xinyue', '芯越楼', '原国防楼');
+  mk('campus', '校园总览');
+  mk('zhengxin', '正心楼');
+  mk('jingcheng', '精诚楼');
+  mk('xinyue', '芯越楼');
 }
 
 function renderFloorBar(){
@@ -1611,7 +1611,7 @@ function renderRoutePanel(){
   el.innerHTML = `
     <div class="routeinfo">
       <div class="target">${name}</div>
-      <div class="where">${b.name} · ${f.level}F ${b.alias?`（原${b.alias}）`:''}</div>
+      <div class="where">${b.name} · ${f.level}F ${b.alias?`（${b.alias}）`:''}</div>
       <ol class="steps">
         ${steps.map((s,i)=>`<li><span class="n">${i+1}</span><div>${s}</div></li>`).join('')}
       </ol>
