@@ -116,39 +116,98 @@
     var list = document.getElementById('adviceList');
     var src  = document.getElementById('resSource');
 
+    // 标签图标 → 建议文案，键名与 laundry-tag.html 的 data-val 一一对应
+    var TAG_ADVICE = {
+      // 水洗
+      'wash-30':   { icon:'🌡️', title:'水温 ≤30℃', text:'用冷水和中性洗涤剂，避免热水导致缩水、掉色。' },
+      'wash-40':   { icon:'🌡️', title:'水温 ≤40℃', text:'温水洗涤更易去污，手洗或常规机洗都可以。' },
+      'wash-60':   { icon:'🌡️', title:'水温 ≤60℃', text:'适合棉麻等耐热织物，可杀菌去油；深色和易掉色衣物分开洗。' },
+      'wash-95':   { icon:'🌡️', title:'可高温煮洗（≤95℃）', text:'只适合白色棉麻、毛巾、床单等特别耐热的织物，化纤、羊毛、真丝绝不能用。' },
+      'wash-hand': { icon:'🤲', title:'只能手洗（≤40℃）', text:'轻柔按压洗涤，不要机洗、不要搓揉拧绞；洗后用毛巾压干水分。' },
+      'wash-no':   { icon:'🚫', title:'不可水洗', text:'不能自己泡水洗，需要干洗或专业护理；局部污渍用湿布轻擦。', warn:true },
+
+      // 漂白
+      'bleach-any': { icon:'🧴', title:'可以使用含氯漂白剂', text:'84 消毒液等可以用，但彩色衣物先在不显眼处测试，避免褪色。' },
+      'bleach-oxy': { icon:'🧴', title:'只能用氧漂（彩漂）', text:'不能用 84 等含氯漂白剂，可用彩漂、过碳酸钠类氧漂产品。' },
+      'bleach-no':  { icon:'🚫', title:'不可漂白', text:'任何漂白剂都不要用，包括 84 消毒液和彩漂。', warn:true },
+
+      // 干衣机
+      'tumble-any':  { icon:'🌀', title:'可以使用干衣机', text:'可以正常滚筒烘干，按衣物材质选择对应程序。' },
+      'tumble-low':  { icon:'🌀', title:'只能低温烘干', text:'用低温档烘干，防止缩水和面料损伤；不确定时自然晾干更稳。' },
+      'tumble-high': { icon:'🌀', title:'可以用高温烘干', text:'适合棉麻等耐热织物，注意不要烘过头，避免发硬起皱。' },
+      'tumble-no':   { icon:'🚫', title:'不可烘干', text:'不能进烘干机，只能自然晾干，热风会造成缩水或变形。', warn:true },
+
+      // 自然干燥
+      'dry-line':   { icon:'🌿', title:'悬挂晾干', text:'用衣架或晾衣绳挂在通风处自然晾干。' },
+      'dry-flat':   { icon:'🌿', title:'平摊晾干', text:'针织、毛衣等要平铺晾干，挂着会被重力拉长变形。' },
+      'dry-shade':  { icon:'🌤️', title:'阴凉处晾干', text:'避开阳光直晒，放在通风阴凉处，减少褪色和面料老化。' },
+      'dry-drip':   { icon:'💧', title:'滴干', text:'洗后不要脱水，直接挂起滴水晾干，适合容易起皱的衣物。' },
+      'dry-nowring':{ icon:'🚫', title:'不可拧干', text:'不要拧绞，用手轻压或用毛巾卷起吸水，防止变形。', warn:true },
+
+      // 熨烫
+      'iron-low':  { icon:'♨️', title:'低温熨烫（≤110℃）', text:'适合真丝、羊毛、化纤，最好垫一层布再熨。' },
+      'iron-mid':  { icon:'♨️', title:'中温熨烫（≤150℃）', text:'适合棉、涤棉，可稍加蒸汽，熨斗不要长时间停在一处。' },
+      'iron-high': { icon:'♨️', title:'高温熨烫（≤200℃）', text:'适合棉麻，可先喷湿或垫布；深色衣物垫布防止亮痕。' },
+      'iron-no':   { icon:'🚫', title:'不可熨烫', text:'熨烫会导致变形或留下亮痕，不要用熨斗。', warn:true },
+
+      // 专业护理
+      'clean-p':  { icon:'🧼', title:'可常规干洗（P）', text:'可送干洗店，使用四氯乙烯或碳氢溶剂常规干洗。' },
+      'clean-f':  { icon:'🧼', title:'仅石油溶剂干洗（F）', text:'干洗时只能用石油类溶剂，温和处理，送店时提醒店员。' },
+      'clean-w':  { icon:'💧', title:'可专业湿洗（W）', text:'可以送专业店做湿洗，不是普通在家水洗。' },
+      'clean-no': { icon:'🚫', title:'不可干洗', text:'不能送干洗，按水洗符号处理。', warn:true }
+    };
+    var GROUP_ORDER = ['wash', 'bleach', 'tumble', 'dry', 'iron', 'clean'];
+
     // ===== 核心：根据模式生成建议 =====
     function buildAdvice() {
       var advice = [];
 
       if (mode === 'tag') {
-        var tag = JSON.parse(localStorage.getItem('laundryTag') || '{}');
-        if (Object.keys(tag).length === 0) return null;
-        src.textContent = '依据：你选择的标签图标';
+        var tag = {};
+        try {
+          tag = JSON.parse(localStorage.getItem('laundryTag') || '{}');
+        } catch (e) {
+          tag = {};
+        }
+        var validKeys = GROUP_ORDER.filter(function (g) {
+          return tag[g] && TAG_ADVICE[tag[g]];
+        });
+        if (validKeys.length === 0) return null;
+        src.textContent = '依据：你选择的 ' + validKeys.length + ' 个洗护图标';
 
-        // 水洗温度
-        if (tag.wash === 'wash-30') advice.push({ icon:'🌡️', title:'水温：≤30℃ 冷水', text:'用冷水和中性洗涤剂，避免热水导致缩水、掉色。' });
-        if (tag.wash === 'wash-40') advice.push({ icon:'🌡️', title:'水温：≤40℃ 温水', text:'温水洗涤更易去污，手洗或机洗都可以。' });
-        if (tag.wash === 'wash-60') advice.push({ icon:'🌡️', title:'水温：≤60℃ 热水', text:'高温洗涤适用于棉麻耐热织物，可杀菌去油。深色衣物仍建议分开洗。' });
-        if (tag.wash === 'wash-nd')  advice.push({ icon:'🚫', title:'这件衣服不能水洗', text:'需要送干洗。自己泡水可能导致缩水变形。', warn:true });
+        // 按固定顺序输出
+        GROUP_ORDER.forEach(function (g) {
+          var v = tag[g];
+          if (v && TAG_ADVICE[v]) advice.push(TAG_ADVICE[v]);
+        });
 
-        // 漂白
-        if (tag.bleach === 'bleach-ok')  advice.push({ icon:'🧴', title:'可以正常漂白', text:'可用常规含氯漂白剂，但建议先在不显眼处测试。' });
-        if (tag.bleach === 'bleach-oxy') advice.push({ icon:'🧴', title:'只能用氧漂', text:'不能用含氯漂白剂（84消毒液不行），氧漂（彩漂）可以。' });
-        if (tag.bleach === 'bleach-no')  advice.push({ icon:'🚫', title:'禁止漂白', text:'任何漂白剂都不能用，包括 84 和彩漂。', warn:true });
-
-        // 晾晒
-        if (tag.dry === 'dry-natural') advice.push({ icon:'🌿', title:'悬挂晾干', text:'用衣架挂到通风处自然晾干即可。' });
-        if (tag.dry === 'dry-flat')    advice.push({ icon:'🌿', title:'平摊晾干', text:'针织、毛衣类平铺晾干，挂着会被重力拉长变形。' });
-        if (tag.dry === 'dry-shade')   advice.push({ icon:'🌤️', title:'阴凉处晾干', text:'避开阳光直晒，放在通风阴凉处，防止褪色和面料老化。' });
-        if (tag.dry === 'dry-tumbler') advice.push({ icon:'🌀', title:'可以烘干', text:'可用烘干机低温烘干，注意不要烘太久。' });
-
-        // 熨烫
-        if (tag.iron === 'iron-low') advice.push({ icon:'♨️', title:'低温熨烫', text:'熨斗温度 ≤110℃，最好垫一层布再烫。' });
-        if (tag.iron === 'iron-mid') advice.push({ icon:'♨️', title:'中温熨烫', text:'熨斗温度 ≤150℃，可稍加蒸汽。' });
-        if (tag.iron === 'iron-no')  advice.push({ icon:'🚫', title:'不可熨烫', text:'熨斗一烫就会变形或留下亮痕，不要烫。', warn:true });
-
-        // 兜底
-        if (advice.length === 0) advice.push({ icon:'ℹ️', title:'未选择标签', text:'你没有选择任何图标，建议返回重新选择。' });
+        // 组合提醒
+        if (tag.wash === 'wash-no' && tag.clean === 'clean-no') {
+          advice.push({
+            icon:'⚠️',
+            title:'标签说明不能水洗也不能干洗',
+            text:'这种情况比较少见，建议直接送专业洗衣店，让店员确认处理方式，不要自己尝试。',
+            warn:true
+          });
+        }
+        if (tag.wash === 'wash-hand' && tag.tumble && tag.tumble !== 'tumble-no') {
+          advice.push({
+            icon:'⚠️',
+            title:'手洗衣物不建议机烘',
+            text:'只能手洗通常意味着面料怕翻滚和高温，洗后压干水分、平铺阴干更安全。',
+            warn:true
+          });
+        }
+        if (tag.wash === 'wash-95' && tag.iron && tag.iron !== 'iron-no') {
+          advice.push({
+            icon:'ℹ️',
+            title:'耐煮洗不等于耐高温熨烫',
+            text:'洗涤温度高不代表熨烫也能用高温，熨烫仍按熨斗符号的点数来。'
+          });
+        }
+        if (advice.length === 0) {
+          advice.push({ icon:'ℹ️', title:'未读取到有效标签', text:'你选择的图标没有对应建议，建议返回重新选择。' });
+        }
       }
 
       if (mode === 'quiz') {
@@ -156,7 +215,6 @@
         if (!q.fabric) return null;
         src.textContent = '依据：你的 4 个回答';
 
-        // 按面料定基准
         var base = {
           cotton:    { temp:'≤40℃ 温水', prog:'常规机洗或手洗', extra:'冷水洗可减少缩水和掉色' },
           wool:      { temp:'≤30℃ 冷水', prog:'羊毛/轻柔程序',   extra:'千万别搓揉，会起球缩水' },
@@ -167,22 +225,18 @@
 
         advice.push({ icon:'💧', title:'水温与程序：' + base.temp, text:'推荐使用「' + base.prog + '」。' + base.extra + '。' });
 
-        // 特殊装饰
         if (q.decor === 'print')  advice.push({ icon:'🎨', title:'翻面洗', text:'印花、烫画、刺绣朝内洗，避免摩擦脱落。不要用刷子刷图案。' });
         if (q.decor === 'bead')   advice.push({ icon:'✨', title:'装洗衣袋', text:'水钻、亮片一定要装进洗衣袋，防止掉钻和刮伤其他衣服。建议手洗。' });
         if (q.decor === 'zipper') advice.push({ icon:'🔗', title:'拉好拉链', text:'拉链拉到底、扣子扣好再洗，避免勾破面料。金属件最好包一层布。' });
 
-        // 颜色
-        if (q.color === 'light') advice.push({ icon:'⚪', title:'浅色分开洗', text:'浅色单独洗，别和深色混，否则会被染色。' });
-        if (q.color === 'dark')  advice.push({ icon:'⚫', title:'深色单独洗', text:'深色第一次洗可能掉色，建议单独洗，冷水洗，反面晾晒。' });
+        if (q.color === 'light')      advice.push({ icon:'⚪', title:'浅色分开洗', text:'浅色单独洗，别和深色混，否则会被染色。' });
+        if (q.color === 'dark')       advice.push({ icon:'⚫', title:'深色单独洗', text:'深色第一次洗可能掉色，建议单独洗，冷水洗，反面晾晒。' });
         if (q.color === 'multicolor') advice.push({ icon:'🌈', title:'拼色小心', text:'拼色衣服容易互相串色，建议冷水快洗，不要浸泡。' });
 
-        // 版型
-        if (q.fit === 'slim') advice.push({ icon:'📏', title:'不要热水、不要甩太干', text:'紧身弹力衣物用温水和轻柔模式，脱水时间短一点，防止变形。' });
+        if (q.fit === 'slim')       advice.push({ icon:'📏', title:'不要热水、不要甩太干', text:'紧身弹力衣物用温水和轻柔模式，脱水时间短一点，防止变形。' });
         if (q.fit === 'structured') advice.push({ icon:'🧥', title:'建议少洗、送干洗', text:'有硬挺结构的衣服水洗容易变形塌陷，尽量局部清洁或送干洗。' });
-        if (q.fit === 'loose') advice.push({ icon:'🌿', title:'晾晒注意形状', text:'宽松衣服悬挂晾干时整理好肩线和下摆，防止挂着变形。' });
+        if (q.fit === 'loose')      advice.push({ icon:'🌿', title:'晾晒注意形状', text:'宽松衣服悬挂晾干时整理好肩线和下摆，防止挂着变形。' });
 
-        // 特殊组合判断
         if (q.fabric === 'wool' || q.fabric === 'silk') {
           advice.push({ icon:'⚠️', title:'这两个面料要特别当心', text:'羊毛和真丝都怕热水、怕搓揉、怕拧绞。建议手洗，用毛巾压干后平铺阴干。', warn:true });
         }
@@ -196,7 +250,6 @@
 
     // ===== 渲染 =====
     var advice = buildAdvice();
-
     if (!advice) {
       list.innerHTML = '<div class="empty-tip">没有读取到你的选择数据。<br>请返回<a href="laundry.html" style="color:#3b7ddd;">重新选择</a>。</div>';
       src.textContent = '';
@@ -213,6 +266,6 @@
       });
       list.innerHTML = html;
     }
-  </script>
+</script>
 </body>
 </html>
