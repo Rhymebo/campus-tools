@@ -3,22 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>校园教室导览 · 正心楼 / 精诚楼 / 芯越楼</title>
+<title>快速找教室 · 校园生活工具站</title>
 <style>
   :root{
-    --ink:#152523; --muted:#6b7c78; --line:#e3e9e6;
-    --accent:#2f7d6d; --accent-soft:#e6f2ee;
-    --bg:#f1f4f2; --card:#ffffff;
+    --ink:#141a17; --muted:#5b6762; --line:#e0e6e2;
+    --accent:#0f766e; --accent-soft:#e4f3ef;
+    --bg:#f6f8f7; --card:#ffffff;
     --route:#e2453c;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
     background:var(--bg); color:var(--ink);
-    font-family:"Microsoft YaHei","PingFang SC","Hiragino Sans GB",system-ui,-apple-system,sans-serif;
+    font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
     -webkit-font-smoothing:antialiased;
   }
-  header{
+  /* 与站点其它页面一致的顶栏 */
+  .sitebar{background:#fff;border-bottom:1px solid var(--line);}
+  .sitebar-inner{
+    max-width:1560px;margin:0 auto;padding:10px 20px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px 20px;flex-wrap:wrap;
+  }
+  .sbrand{display:inline-flex;align-items:center;gap:9px;color:var(--ink);font-size:14px;font-weight:600;text-decoration:none;}
+  .sbrand-mark{
+    display:grid;place-items:center;width:28px;height:28px;flex:0 0 auto;
+    border:1px solid #c9d3ce;border-radius:8px;background:#eef3f1;color:#0a5a54;
+  }
+  .sbrand-mark svg{width:17px;height:17px;}
+  .snav{display:flex;flex-wrap:wrap;gap:2px;}
+  .snav a{padding:7px 11px;border-radius:8px;color:var(--muted);font-size:13.5px;font-weight:600;text-decoration:none;}
+  .snav a:hover{background:#eef3f1;color:var(--ink);}
+  .snav a[aria-current="page"]{background:var(--accent-soft);color:var(--accent);}
+
+  header.appbar{
     position:sticky; top:0; z-index:30;
     background:rgba(255,255,255,.92); backdrop-filter:blur(10px);
     border-bottom:1px solid var(--line);
@@ -31,17 +48,17 @@
   .logo{
     width:34px;height:34px;border-radius:10px;background:var(--accent);
     display:grid;place-items:center;color:#fff;font-weight:700;font-size:15px;
-    box-shadow:0 4px 10px rgba(47,125,109,.25);
+    box-shadow:0 4px 10px rgba(15,118,110,.22);
   }
   .brand h1{font-size:16px;margin:0;font-weight:700;letter-spacing:.5px;}
   .brand p{margin:0;font-size:11px;color:var(--muted);letter-spacing:.3px;}
-  .searchwrap{position:relative;flex:1;min-width:260px;max-width:460px;margin-left:auto;}
+  .searchwrap{position:relative;flex:1 1 260px;min-width:0;max-width:460px;margin-left:auto;}
   .searchwrap input{
     width:100%;padding:10px 14px 10px 38px;border-radius:12px;border:1px solid var(--line);
     background:#f7f9f8;font-size:13.5px;outline:none;font-family:inherit;color:var(--ink);
     transition:.18s;
   }
-  .searchwrap input:focus{background:#fff;border-color:var(--accent);box-shadow:0 0 0 3px rgba(47,125,109,.10);}
+  .searchwrap input:focus{background:#fff;border-color:var(--accent);box-shadow:0 0 0 3px rgba(15,118,110,.10);}
   .searchwrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.45;}
   .results{
     position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid var(--line);
@@ -67,7 +84,7 @@
     display:flex;align-items:center;gap:8px;transition:.16s;font-weight:600;
   }
   .tab:hover{border-color:#c9d8d3;transform:translateY(-1px);}
-  .tab.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 6px 16px rgba(47,125,109,.22);}
+  .tab.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 6px 16px rgba(15,118,110,.20);}
   .tab .dot{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.6;}
   .tab em{font-style:normal;font-weight:400;font-size:11px;opacity:.75;}
 
@@ -78,7 +95,8 @@
     background:#fff;font-size:12.5px;cursor:pointer;font-family:inherit;color:var(--ink);font-weight:600;
   }
   .chip:hover{border-color:#c9d8d3;}
-  .chip.active{background:#152523;color:#fff;border-color:#152523;}
+  .chip.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .chip.back{color:var(--accent);font-weight:700;}
   .chip.dim{opacity:.35;cursor:not-allowed;}
 
   .stage{
@@ -146,15 +164,46 @@
     .side .card{flex:1 1 300px;}
     .searchwrap{max-width:none;}
   }
+  @media (max-width:640px){
+    .sitebar-inner{padding:9px 14px;}
+    .snav a{padding:6px 8px;font-size:13px;}
+    .hdr{padding:10px 14px;gap:10px 12px;}
+    .brand{flex:1 1 100%;min-width:0;}
+    .brand h1{font-size:15px;}
+    .searchwrap{flex:1 1 100%;min-width:0;max-width:none;margin-left:0;}
+    .wrap{padding:12px 12px 32px;gap:12px;}
+    .stage{padding:8px;}
+    .tabs{gap:6px;}
+    .tab{padding:8px 12px;font-size:13px;}
+    .side{flex-direction:column;}
+    .side .card{flex:1 1 auto;}
+  }
 </style>
 </head>
 <body>
-<header>
+<header class="sitebar">
+  <div class="sitebar-inner">
+    <a class="sbrand" href="index.html" aria-label="校园生活工具站首页">
+      <span class="sbrand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 9.5 12 4l8 5.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1V9.5Z"></path>
+        </svg>
+      </span>
+      <span>校园生活工具站</span>
+    </a>
+    <nav class="snav" aria-label="主导航">
+      <a href="laundry.html">洗衣小助手</a>
+      <a href="power.html">电费计算器</a>
+      <a href="findplace.html" aria-current="page">快速找教室</a>
+    </nav>
+  </div>
+</header>
+<header class="appbar">
   <div class="hdr">
     <div class="brand">
       <div class="logo">校</div>
       <div>
-        <h1>校园教室导览</h1>
+        <h1>快速找教室</h1>
         <p>正心楼 · 精诚楼（原南科研楼） · 芯越楼（原国防楼）</p>
       </div>
     </div>
@@ -1440,6 +1489,11 @@ function renderFloorBar(){
   el.innerHTML = '';
   if (S.view === 'campus') return;
   const b = BUILDINGS[S.view];
+  const back = document.createElement('button');
+  back.className = 'chip back';
+  back.textContent = '← 校园总览';
+  back.onclick = openCampus;
+  el.appendChild(back);
   const lbl = document.createElement('span');
   lbl.className = 'lbl';
   lbl.textContent = '楼层';
@@ -1495,9 +1549,31 @@ function openBuilding(key){
   S.floor = 0;
   S.selected = null;
   S.route = null;
+  try { history.pushState({ view:key }, '', '#' + key); } catch(e){}
   render();
   window.scrollTo({ top:0, behavior:'smooth' });
 }
+
+function openCampus(){
+  // 有历史记录时交给返回键处理，避免手机返回直接退出整站
+  if (history.state && history.state.view){
+    history.back();
+    return;
+  }
+  S.view = 'campus';
+  S.floor = 0;
+  render();
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+window.addEventListener('popstate', ()=>{
+  if (S.view !== 'campus'){
+    S.view = 'campus';
+    S.floor = 0;
+    render();
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }
+});
 
 function selectRoom(bId, floorIdx, roomId){
   S.selected = { bId, floor: floorIdx, roomId };
